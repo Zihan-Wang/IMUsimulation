@@ -30,6 +30,10 @@ The package can be built with Catkin. The build has been test on Ubuntu 18.04, M
 
     roslaunch ov_msckf simulation.launch
 
+## Sample Dataset
+https://github.com/Zihan-Wang/IMUsimulation/tree/master/ov_data/sim
+
+
 ## Custmize Launch File
     <!-- set groundtruth dataset file-->
     <arg name="dataset"    default="udel_gore.txt" /> <!-- euroc_V1_01_easy, udel_gore, tum_corridor1_512_16_okvis, udel_arl -->
