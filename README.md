@@ -1,7 +1,7 @@
 # IMUsimulation
 + This is a wrapped sim platform based on openvins. For more information, please see https://github.com/rpng/open_vins.
 
-## dependency
+## Dependency
 - openCV
 
 You should follow:
