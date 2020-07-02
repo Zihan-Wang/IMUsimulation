@@ -1,5 +1,5 @@
 # IMUsimulation
-+ This is a wrapped sim platform based on openvins. For more information, please see https://github.com/rpng/open_vins.
++ This is a sim platform based on OpenVINS. For more information, please see https://github.com/rpng/open_vins.
 
 ## Dependency
 - openCV
