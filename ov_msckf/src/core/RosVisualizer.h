@@ -117,22 +117,23 @@ namespace ov_msckf {
 
         // Our publishers
         ros::Publisher pub_poseimu;
-        ros::Publisher pub_odomimu;
+        ros::Publisher 
+        /*ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
         ros::Publisher pub_points_msckf;
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
         ros::Publisher pub_points_sim;
         ros::Publisher pub_tracks;
-        tf::TransformBroadcaster *mTfBr;
+        tf::TransformBroadcaster *mTfBr;*/
 
         // For path viz
         unsigned int poses_seq_imu = 0;
         vector<geometry_msgs::PoseStamped> poses_imu;
 
         // Groundtruth infomation
-        ros::Publisher pub_pathgt;
-        ros::Publisher pub_posegt;
+        /*ros::Publisher pub_pathgt;
+        ros::Publisher pub_posegt;*/
         double summed_rmse_ori = 0.0;
         double summed_rmse_pos = 0.0;
         double summed_nees_ori = 0.0;
