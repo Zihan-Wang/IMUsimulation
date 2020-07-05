@@ -125,8 +125,8 @@ namespace ov_msckf {
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
         ros::Publisher pub_points_sim;
-        ros::Publisher pub_tracks;
-        tf::TransformBroadcaster *mTfBr;*/
+        ros::Publisher pub_tracks;*/
+        tf::TransformBroadcaster *mTfBr;
 
         // For path viz
         unsigned int poses_seq_imu = 0;
