@@ -154,7 +154,7 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
     }
 
     // publish state
-    publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am);
+    publish_imustate(wm, am);
 }
 
 void RosVisualizer::visualize_odometry(double timestamp) {
