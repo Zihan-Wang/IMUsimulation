@@ -87,7 +87,7 @@ namespace ov_msckf {
          */
         void visualize_final();
 
-        void visualize_imu();
+        void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
 
     protected:
 
