@@ -117,7 +117,8 @@ namespace ov_msckf {
 
         // Our publishers
         ros::Publisher pub_poseimu;
-        ros::Publisher 
+        ros::Publisher pub_measimu;
+        ros::Publisher pub_measfeat;
         /*ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
         ros::Publisher pub_points_msckf;
