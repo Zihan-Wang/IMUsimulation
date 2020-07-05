@@ -93,7 +93,7 @@ namespace ov_msckf {
 
         /// Publish the current state
         void publish_state();
-
+        void publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am);
         /// Publish the active tracking image
         void publish_images();
 
