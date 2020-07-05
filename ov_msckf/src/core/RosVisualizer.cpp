@@ -34,6 +34,10 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     // Setup pose and path publisher
     pub_poseimu = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
     ROS_INFO("Publishing: %s", pub_poseimu.getTopic().c_str());
+    pub_measimu = nh.advertise<sensor_msgs::Imu>("/ov_msckf/measimu", 2);
+    ROS_INFO("Publishing: %s", pub_measimu.getTopic().c_str());
+    /*pub_measfeat = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
+    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
     /*pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
     ROS_INFO("Publishing: %s", pub_odomimu.getTopic().c_str());
     pub_pathimu = nh.advertise<nav_msgs::Path>("/ov_msckf/pathimu", 2);
@@ -139,7 +143,7 @@ void RosVisualizer::visualize() {
 
 }
 
-void RosVisualizer::visualize_imu(){
+void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
     if(!_app->initialized())
         return;
 
@@ -150,7 +154,7 @@ void RosVisualizer::visualize_imu(){
     }
 
     // publish state
-    publish_state();
+    publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am);
 }
 
 void RosVisualizer::visualize_odometry(double timestamp) {
@@ -279,6 +283,120 @@ void RosVisualizer::visualize_final() {
 }
 
 
+void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
+
+    // Get the current state
+    State* state = _app->get_state();
+
+    // We want to publish in the IMU clock frame
+    // The timestamp in the state will be the last camera time
+    double t_ItoC = state->_calib_dt_CAMtoIMU->value()(0);
+    double timestamp_inI = state->_timestamp + t_ItoC;
+
+    // Create pose of IMU (note we use the bag time)
+    geometry_msgs::PoseWithCovarianceStamped poseIinM;
+    poseIinM.header.stamp = ros::Time(timestamp_inI);
+    poseIinM.header.seq = poses_seq_imu;
+    poseIinM.header.frame_id = "global";
+    poseIinM.pose.pose.orientation.x = state->_imu->quat()(0);
+    poseIinM.pose.pose.orientation.y = state->_imu->quat()(1);
+    poseIinM.pose.pose.orientation.z = state->_imu->quat()(2);
+    poseIinM.pose.pose.orientation.w = state->_imu->quat()(3);
+    poseIinM.pose.pose.position.x = state->_imu->pos()(0);
+    poseIinM.pose.pose.position.y = state->_imu->pos()(1);
+    poseIinM.pose.pose.position.z = state->_imu->pos()(2);
+
+    // Create measurment of IMU
+    sensor_msgs::Imu imu_data;
+    imu_data.header.stamp = ros::Time(timestamp_inI);
+    imu_data.header.seq = poses_seq_imu;
+    imu_data.header.frame_id = "base_link";
+    imu_data.orientation.x = state->_imu->quat()(0);
+    imu_data.orientation.y = state->_imu->quat()(1);
+    imu_data.orientation.z = state->_imu->quat()(2);
+    imu_data.orientation.w = state->_imu->quat()(3);
+    imu_data.linear_acceleration.x = am(0);
+    imu_data.linear_acceleration.y = am(1);
+    imu_data.linear_acceleration.z = am(2);
+    imu_data.angular_velocity.x = wm(0);
+    imu_data.angular_velocity.y = wm(1);
+    imu_data.angular_velocity.z = wm(2);
+
+
+    // Finally set the covariance in the message (in the order position then orientation as per ros convention)
+    std::vector<Type*> statevars;
+    statevars.push_back(state->_imu->pose()->p());
+    statevars.push_back(state->_imu->pose()->q());
+    Eigen::Matrix<double, 6, 6> covariance_posori = StateHelper::get_marginal_covariance(_app->get_state(), statevars);
+    for (int r = 0; r < 6; r++) {
+        for (int c = 0; c < 6; c++) {
+            poseIinM.pose.covariance[6 * r + c] = covariance_posori(r, c);
+        }
+    }
+    pub_poseimu.publish(poseIinM);
+    pub_measimu.publish(imu_data);
+
+
+    //=========================================================
+    //=========================================================
+
+    // Append to our pose vector
+    geometry_msgs::PoseStamped posetemp;
+    posetemp.header = poseIinM.header;
+    posetemp.pose = poseIinM.pose.pose;
+    poses_imu.push_back(posetemp);
+
+    // Create our path (imu)
+    nav_msgs::Path arrIMU;
+    arrIMU.header.stamp = ros::Time::now();
+    arrIMU.header.seq = poses_seq_imu;
+    arrIMU.header.frame_id = "global";
+    arrIMU.poses = poses_imu;
+    /*pub_pathimu.publish(arrIMU);*/
+
+    // Move them forward in time
+    poses_seq_imu++;
+
+    // Publish our transform on TF
+    // NOTE: since we use JPL we have an implicit conversion to Hamilton when we publish
+    // NOTE: a rotation from GtoI in JPL has the same xyzw as a ItoG Hamilton rotation
+    tf::StampedTransform trans;
+    trans.stamp_ = ros::Time::now();
+    trans.frame_id_ = "global";
+    trans.child_frame_id_ = "imu";
+    tf::Quaternion quat(state->_imu->quat()(0), state->_imu->quat()(1), state->_imu->quat()(2), state->_imu->quat()(3));
+    trans.setRotation(quat);
+    tf::Vector3 orig(state->_imu->pos()(0), state->_imu->pos()(1), state->_imu->pos()(2));
+    trans.setOrigin(orig);
+    if (publish_global2imu_tf) {
+        mTfBr->sendTransform(trans);
+    }
+
+    // Loop through each camera calibration and publish it
+    for (const auto& calib : state->_calib_IMUtoCAM) {
+        // need to flip the transform to the IMU frame
+        Eigen::Vector4d q_ItoC = calib.second->quat();
+        Eigen::Vector3d p_CinI = -calib.second->Rot().transpose() * calib.second->pos();
+        // publish our transform on TF
+        // NOTE: since we use JPL we have an implicit conversion to Hamilton when we publish
+        // NOTE: a rotation from ItoC in JPL has the same xyzw as a CtoI Hamilton rotation
+        tf::StampedTransform trans;
+        trans.stamp_ = ros::Time::now();
+        trans.frame_id_ = "imu";
+        trans.child_frame_id_ = "cam" + std::to_string(calib.first);
+        tf::Quaternion quat(q_ItoC(0), q_ItoC(1), q_ItoC(2), q_ItoC(3));
+        trans.setRotation(quat);
+        tf::Vector3 orig(p_CinI(0), p_CinI(1), p_CinI(2));
+        trans.setOrigin(orig);
+        if (publish_calibration_tf) {
+            mTfBr->sendTransform(trans);
+        }
+    }
+
+}
+
+
+
 
 void RosVisualizer::publish_state() {
 
@@ -302,6 +420,9 @@ void RosVisualizer::publish_state() {
     poseIinM.pose.pose.position.x = state->_imu->pos()(0);
     poseIinM.pose.pose.position.y = state->_imu->pos()(1);
     poseIinM.pose.pose.position.z = state->_imu->pos()(2);
+
+    // Create measurment of IMU
+
 
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
     std::vector<Type*> statevars;

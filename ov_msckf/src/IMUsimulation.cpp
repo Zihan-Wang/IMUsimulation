@@ -131,7 +131,7 @@ int main(int argc, char** argv)
             if(buffer_timecam != -1) {
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
-                viz->visualize_imu();
+                viz->visualize_imu(wm, am);
 #endif
             }
             buffer_timecam = time_cam;
