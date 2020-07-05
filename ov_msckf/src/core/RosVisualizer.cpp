@@ -29,12 +29,12 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
 
     // Setup our transform broadcaster
-    /*mTfBr = new tf::TransformBroadcaster();*/
+    mTfBr = new tf::TransformBroadcaster();
 
     // Setup pose and path publisher
     pub_poseimu = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
     ROS_INFO("Publishing: %s", pub_poseimu.getTopic().c_str());
-    pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
+    /*pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
     ROS_INFO("Publishing: %s", pub_odomimu.getTopic().c_str());
     pub_pathimu = nh.advertise<nav_msgs::Path>("/ov_msckf/pathimu", 2);
     ROS_INFO("Publishing: %s", pub_pathimu.getTopic().c_str());
@@ -57,7 +57,7 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     pub_posegt = nh.advertise<geometry_msgs::PoseStamped>("/ov_msckf/posegt", 2);
     ROS_INFO("Publishing: %s", pub_posegt.getTopic().c_str());
     pub_pathgt = nh.advertise<nav_msgs::Path>("/ov_msckf/pathgt", 2);
-    ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());
+    ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());*/
 
     // option to enable publishing of global to IMU transformation
     nh.param<bool>("publish_global_to_imu_tf", publish_global2imu_tf, true);
@@ -156,8 +156,8 @@ void RosVisualizer::visualize_imu(){
 void RosVisualizer::visualize_odometry(double timestamp) {
 
     // Check if we have subscribers
-    if(pub_odomimu.getNumSubscribers()==0)
-        return;
+    /*if(pub_odomimu.getNumSubscribers()==0)
+        return;*/
 
     // Return if we have not inited and a second has passes
     if(!_app->initialized() || (timestamp - _app->initialized_time()) < 1)
@@ -219,7 +219,7 @@ void RosVisualizer::visualize_odometry(double timestamp) {
     }
 
     // Finally, publish the resulting odometry message
-    pub_odomimu.publish(odomIinM);
+    /*pub_odomimu.publish(odomIinM);*/
 
 
 }
@@ -331,7 +331,7 @@ void RosVisualizer::publish_state() {
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
-    pub_pathimu.publish(arrIMU);
+    /*pub_pathimu.publish(arrIMU);*/
 
     // Move them forward in time
     poses_seq_imu++;
@@ -379,8 +379,8 @@ void RosVisualizer::publish_state() {
 void RosVisualizer::publish_images() {
 
     // Check if we have subscribers
-    if(pub_tracks.getNumSubscribers()==0)
-        return;
+    /*if(pub_tracks.getNumSubscribers()==0)
+        return;*/
 
     // Get our trackers
     TrackBase *trackFEATS = _app->get_track_feat();
@@ -400,7 +400,7 @@ void RosVisualizer::publish_images() {
     sensor_msgs::ImagePtr exl_msg = cv_bridge::CvImage(header, "bgr8", img_history).toImageMsg();
 
     // Publish
-    pub_tracks.publish(exl_msg);
+    /*pub_tracks.publish(exl_msg);*/
 
 }
 
@@ -410,9 +410,9 @@ void RosVisualizer::publish_images() {
 void RosVisualizer::publish_features() {
 
     // Check if we have subscribers
-    if(pub_points_msckf.getNumSubscribers()==0 && pub_points_slam.getNumSubscribers()==0 &&
+    /*if(pub_points_msckf.getNumSubscribers()==0 && pub_points_slam.getNumSubscribers()==0 &&
        pub_points_aruco.getNumSubscribers()==0 && pub_points_sim.getNumSubscribers()==0)
-        return;
+        return;*/
 
     // Get our good features
     std::vector<Eigen::Vector3d> feats_msckf = _app->get_good_features_MSCKF();
@@ -444,7 +444,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    pub_points_msckf.publish(cloud);
+    /*pub_points_msckf.publish(cloud);*/
 
     //====================================================================
     //====================================================================
@@ -479,7 +479,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    pub_points_slam.publish(cloud_SLAM);
+    /*pub_points_slam.publish(cloud_SLAM);*/
 
     //====================================================================
     //====================================================================
@@ -514,7 +514,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    pub_points_aruco.publish(cloud_ARUCO);
+    /*pub_points_aruco.publish(cloud_ARUCO);*/
 
 
     //====================================================================
@@ -554,7 +554,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    pub_points_sim.publish(cloud_SIM);
+    /*pub_points_sim.publish(cloud_SIM);*/
 
 }
 
@@ -598,7 +598,7 @@ void RosVisualizer::publish_groundtruth() {
     poseIinM.pose.position.x = state_gt(5,0);
     poseIinM.pose.position.y = state_gt(6,0);
     poseIinM.pose.position.z = state_gt(7,0);
-    pub_posegt.publish(poseIinM);
+    /*pub_posegt.publish(poseIinM);*/
 
     // Append to our pose vector
     poses_gt.push_back(poseIinM);
@@ -609,7 +609,7 @@ void RosVisualizer::publish_groundtruth() {
     arrIMU.header.seq = poses_seq_gt;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_gt;
-    pub_pathgt.publish(arrIMU);
+    /*pub_pathgt.publish(arrIMU);*/
 
     // Move them forward in time
     poses_seq_gt++;
