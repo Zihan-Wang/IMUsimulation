@@ -104,14 +104,6 @@ target_include_directories(ov_msckf_lib PUBLIC src)
 
 if (catkin_FOUND)
 
-    add_executable(run_serial_msckf src/ros_serial_msckf.cpp)
-    target_link_libraries(run_serial_msckf ov_msckf_lib ${thirdparty_libraries})
-
-    add_executable(run_subscribe_msckf src/ros_subscribe_msckf.cpp)
-    target_link_libraries(run_subscribe_msckf ov_msckf_lib ${thirdparty_libraries})
-
-    add_executable(run_simulation src/run_simulation.cpp)
-    target_link_libraries(run_simulation ov_msckf_lib ${thirdparty_libraries})
     
     add_executable(IMUsimulation src/IMUsimulation.cpp)
     target_link_libraries(IMUsimulation ov_msckf_lib ${thirdparty_libraries})
@@ -121,8 +113,6 @@ else()
     add_executable(IMUsimulation src/IMUsimulation.cpp)
     target_link_libraries(IMUsimulation ov_msckf_lib ${thirdparty_libraries})
 
-    add_executable(run_simulation src/run_simulation.cpp)
-    target_link_libraries(run_simulation ov_msckf_lib ${thirdparty_libraries})
 
 endif()
 
