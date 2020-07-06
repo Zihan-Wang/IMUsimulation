@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 #ifdef ROS_AVAILABLE
     viz = new RosVisualizer(nh, sys, sim);
     ros::Publisher pub_measfeat;
-    pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
+    pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat", 2);
     ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
 #endif
 
