@@ -122,11 +122,11 @@ if (catkin_FOUND)
     
     add_executable(IMUsimulation src/IMUsimulation.cpp)
     target_link_libraries(IMUsimulation ov_msckf_lib ${thirdparty_libraries})
-
+    add_dependencies(IMUsimulation IMUsimulation_generate_messages_cpp)
 else()
 
     add_executable(IMUsimulation src/IMUsimulation.cpp)
     target_link_libraries(IMUsimulation ov_msckf_lib ${thirdparty_libraries})
-
+    add_dependencies(IMUsimulation IMUsimulation_generate_messages_cpp)
 
 endif()
