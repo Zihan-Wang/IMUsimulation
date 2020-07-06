@@ -1,0 +1,1 @@
+uv_msgs/ImagePoint[] points
