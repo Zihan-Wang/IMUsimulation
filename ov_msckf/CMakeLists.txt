@@ -28,6 +28,7 @@ generate_messages(
    sensor_msgs
 )
 
+
 # display message to user
 message(STATUS "EIGEN VERSION: " ${EIGEN3_VERSION})
 message(STATUS "OPENCV VERSION: " ${OpenCV_VERSION})
@@ -129,4 +130,6 @@ else()
 
 
 endif()
-
+add_dependencies(UVmsg ov_msckf_gencpp)
+add_dependencies(UVsmsg ov_msckf_gencpp)
+add_dependencies(UVListstamped ov_msckf_gencpp)
