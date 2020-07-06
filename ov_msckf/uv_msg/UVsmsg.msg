@@ -1,1 +1,1 @@
-uv_msgs/ImagePoint[] points
+uv_msgs/UVmsg[] points
