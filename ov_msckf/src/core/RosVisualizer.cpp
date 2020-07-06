@@ -315,12 +315,15 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     imu_data.orientation.y = state->_imu->quat()(1);
     imu_data.orientation.z = state->_imu->quat()(2);
     imu_data.orientation.w = state->_imu->quat()(3);
+    imu_data.orientation_covariance[0] = -1;
     imu_data.linear_acceleration.x = am(0);
     imu_data.linear_acceleration.y = am(1);
     imu_data.linear_acceleration.z = am(2);
+    imu_data.linear_acceleration_covariance[0] = -1;
     imu_data.angular_velocity.x = wm(0);
     imu_data.angular_velocity.y = wm(1);
     imu_data.angular_velocity.z = wm(2);
+    imu_data.angular_velocity_covariance[0] = -1;
 
 
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
