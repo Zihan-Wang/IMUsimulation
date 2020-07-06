@@ -26,7 +26,6 @@ generate_messages(
    std_msgs 
    geometry_msgs 
    sensor_msgs
-   shape_msgs # Or other packages containing msgs
 )
 
 # display message to user
