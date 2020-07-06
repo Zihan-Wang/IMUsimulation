@@ -130,6 +130,3 @@ else()
 
 
 endif()
-add_dependencies(UVmsg ov_msckf_gencpp)
-add_dependencies(UVsmsg ov_msckf_gencpp)
-add_dependencies(UVListstamped ov_msckf_gencpp)
