@@ -36,8 +36,8 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_poseimu.getTopic().c_str());
     pub_measimu = nh.advertise<sensor_msgs::Imu>("/ov_msckf/measimu", 2);
     ROS_INFO("Publishing: %s", pub_measimu.getTopic().c_str());
-    pub_measimu = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
-    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
+    /*pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
+    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
     /*pub_measfeat = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
     ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
     /*pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
@@ -400,7 +400,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
 
 }
 
-void RosVisualizer::publish_feat(double time_cam,
+/*void RosVisualizer::publish_feat(double time_cam,
     std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats) {
     ov_msckf::UVListstamped uvsmsg;
     std::vector<ov_msckf::UVsmsg> points;
@@ -422,7 +422,7 @@ void RosVisualizer::publish_feat(double time_cam,
     }
     uvsmsg.points = points;
     pub_measfeat.publish(uvsmsg);
-}
+}*/
 
 
 void RosVisualizer::publish_state() {
