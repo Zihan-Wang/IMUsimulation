@@ -42,7 +42,9 @@
 #include "VioManager.h"
 #include "sim/Simulator.h"
 #include "utils/dataset_reader.h"
-
+#include <ov_msckf/UVmsg.h>
+#include <ov_msckf/UVListstamped.h>
+#include <ov_msckf/UVsmsg.h>
 
 namespace ov_msckf {
 
@@ -88,7 +90,8 @@ namespace ov_msckf {
         void visualize_final();
 
         void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
-
+        void publish_feat(double time_cam,
+        std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);
     protected:
 
         /// Publish the current state
@@ -130,6 +133,7 @@ namespace ov_msckf {
 
         // For path viz
         unsigned int poses_seq_imu = 0;
+        unsigned int seq_featList = 0;
         vector<geometry_msgs::PoseStamped> poses_imu;
 
         // Groundtruth infomation
