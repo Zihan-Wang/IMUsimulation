@@ -42,9 +42,6 @@
 #include "VioManager.h"
 #include "sim/Simulator.h"
 #include "utils/dataset_reader.h"
-#include <ov_msckf/UVmsg.h>
-#include <ov_msckf/UVListstamped.h>
-#include <ov_msckf/UVsmsg.h>
 
 namespace ov_msckf {
 
@@ -90,8 +87,8 @@ namespace ov_msckf {
         void visualize_final();
 
         void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
-        void publish_feat(double time_cam,
-        std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);
+        /*void publish_feat(double time_cam,
+        std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);*/
     protected:
 
         /// Publish the current state
@@ -121,7 +118,7 @@ namespace ov_msckf {
         // Our publishers
         ros::Publisher pub_poseimu;
         ros::Publisher pub_measimu;
-        ros::Publisher pub_measfeat;
+        /*ros::Publisher pub_measfeat;*/
         /*ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
         ros::Publisher pub_points_msckf;

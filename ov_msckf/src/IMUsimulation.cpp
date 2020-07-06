@@ -29,7 +29,9 @@
 #include "utils/parse_cmd.h"
 #include "utils/colors.h"
 
-
+#include <ov_msckf/UVmsg.h>
+#include <ov_msckf/UVsmsg.h>
+#include <ov_msckf/UVListstamped.h>
 #ifdef ROS_AVAILABLE
 #include <ros/ros.h>
 #include "core/RosVisualizer.h"
@@ -45,8 +47,9 @@ VioManager* sys;
 #ifdef ROS_AVAILABLE
 RosVisualizer* viz;
 #endif
-
-
+ros::Publisher pub_measfeat;
+pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
+ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
 // Define the function to be called when ctrl-c (SIGINT) is sent to process
 void signal_callback_handler(int signum) {
     std::exit(signum);
@@ -132,7 +135,26 @@ int main(int argc, char** argv)
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
                 viz->visualize_imu(wm, am);
-                viz->publish_feat(time_cam, camids, feats);
+                ov_msckf::UVListstamped uvsmsg;
+                std::vector<ov_msckf::UVsmsg> points;
+                uvsmsg.header.stamp = ros::Time(time_cam);
+                uvsmsg.header.seq = seq_featList;
+                uvsmsg.header.frame_id = "cam";
+                uvsmsg.cam_id = camids;
+                for (auto featsInC = feats.begin(); featsInC != feats.end(); ++it) {
+                    std::vector<ov_msckf::UVmsg> pointL;
+                    ov_msckf::UVsmsg pList;
+                    for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
+                        ov_msckf::UVmsg point;
+                        point.u = it->second(0);
+                        point.v = it->second(1);
+                        pointL.push_back(point);
+                    }
+                    pList.points = pointL;
+                    points.push_back(pList);
+                }
+                uvsmsg.points = points;
+                pub_measfeat.publish(uvsmsg);
 #endif
             }
             buffer_timecam = time_cam;
