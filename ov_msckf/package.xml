@@ -46,7 +46,7 @@
     <run_depend>ov_core</run_depend>
     <run_depend>ov_eval</run_depend>
     <run_depend>ov_data</run_depend>
-    <run_depend>message_runtime</run_depend>
+    <exec_depend>message_runtime</exec_depend>
 
 
 </package>
