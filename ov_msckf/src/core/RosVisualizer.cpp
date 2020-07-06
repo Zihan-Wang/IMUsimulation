@@ -36,6 +36,8 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_poseimu.getTopic().c_str());
     pub_measimu = nh.advertise<sensor_msgs::Imu>("/ov_msckf/measimu", 2);
     ROS_INFO("Publishing: %s", pub_measimu.getTopic().c_str());
+    pub_measimu = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
+    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
     /*pub_measfeat = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
     ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
     /*pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
@@ -398,7 +400,29 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
 
 }
 
-
+void RosVisualizer::publish_feat(double time_cam,
+    std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats) {
+    ov_msckf::UVListstamped uvsmsg;
+    std::vector<ov_msckf::UVsmsg> points;
+    uvsmsg.header.stamp = ros::Time(time_cam);
+    uvsmsg.header.seq = seq_featList;
+    uvsmsg.header.frame_id = "cam";
+    uvsmsg.cam_id = camids;
+    for (auto featsInC = feats.begin(); featsInC != feats.end(); ++it) {
+        std::vector<ov_msckf::UVmsg> pointL;
+        ov_msckf::UVsmsg pList;
+        for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
+            ov_msckf::UVmsg point;
+            point.u = it->second(0);
+            point.v = it->second(1);
+            pointL.push_back(point);
+        }
+        pList.points = pointL;
+        points.push_back(pList);
+    }
+    uvsmsg.points = points;
+    pub_measfeat.publish(uvsmsg);
+}
 
 
 void RosVisualizer::publish_state() {

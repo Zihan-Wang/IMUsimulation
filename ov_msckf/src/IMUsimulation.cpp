@@ -132,6 +132,7 @@ int main(int argc, char** argv)
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
                 viz->visualize_imu(wm, am);
+                viz->publish_feat(time_cam, camids, feats);
 #endif
             }
             buffer_timecam = time_cam;
