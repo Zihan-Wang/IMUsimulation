@@ -47,9 +47,7 @@ VioManager* sys;
 #ifdef ROS_AVAILABLE
 RosVisualizer* viz;
 #endif
-ros::Publisher pub_measfeat;
-pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
-ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
+
 // Define the function to be called when ctrl-c (SIGINT) is sent to process
 void signal_callback_handler(int signum) {
     std::exit(signum);
@@ -75,6 +73,9 @@ int main(int argc, char** argv)
     sys = new VioManager(params);
 #ifdef ROS_AVAILABLE
     viz = new RosVisualizer(nh, sys, sim);
+    ros::Publisher pub_measfeat;
+    pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
+    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
 #endif
 
     //===================================================================================
@@ -105,7 +106,7 @@ int main(int argc, char** argv)
     double buffer_timecam = -1;
     std::vector<int> buffer_camids;
     std::vector<std::vector<std::pair<size_t,Eigen::VectorXf>>> buffer_feats;
-
+    unsigned int seq_featList = 0;
     // Step through the rosbag
     signal(SIGINT, signal_callback_handler);
 #ifdef ROS_AVAILABLE
@@ -141,7 +142,7 @@ int main(int argc, char** argv)
                 uvsmsg.header.seq = seq_featList;
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
-                for (auto featsInC = feats.begin(); featsInC != feats.end(); ++it) {
+                for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
                     std::vector<ov_msckf::UVmsg> pointL;
                     ov_msckf::UVsmsg pList;
                     for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
@@ -155,6 +156,7 @@ int main(int argc, char** argv)
                 }
                 uvsmsg.points = points;
                 pub_measfeat.publish(uvsmsg);
+                ++seq_featList;
 #endif
             }
             buffer_timecam = time_cam;
