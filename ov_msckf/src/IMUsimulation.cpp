@@ -147,6 +147,7 @@ int main(int argc, char** argv)
                     ov_msckf::UVsmsg pList;
                     for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
                         ov_msckf::UVmsg point;
+                        point.id = it->first;
                         point.u = it->second(0);
                         point.v = it->second(1);
                         pointL.push_back(point);
