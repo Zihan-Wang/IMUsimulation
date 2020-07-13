@@ -20,8 +20,6 @@
  */
 #include "RosVisualizer.h"
 #include <boost/filesystem.hpp>
-#include <fstream>
-#include <iostream>
 using namespace ov_msckf;
 
 
@@ -295,8 +293,6 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     // The timestamp in the state will be the last camera time
     double t_ItoC = state->_calib_dt_CAMtoIMU->value()(0);
     double timestamp_inI = state->_timestamp + t_ItoC;
-
-    // save Map and submaps as txt file as format " timestamp ........  "
 
     // Create pose of IMU (note we use the bag time)
     geometry_msgs::PoseWithCovarianceStamped poseIinM;
