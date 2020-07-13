@@ -19,8 +19,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RosVisualizer.h"
-
-
+#include <boost/filesystem.hpp>
+#include <fstream>
+#include <iostream>
 using namespace ov_msckf;
 
 
@@ -295,6 +296,12 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     double t_ItoC = state->_calib_dt_CAMtoIMU->value()(0);
     double timestamp_inI = state->_timestamp + t_ItoC;
 
+    boost::filesystem::path posePath("D:/pose and 3d/pred_3d_obj_matched_txt" + "/imupose" +  ".txt");
+    std::ofstream outStream1(posePath.c_str());
+    boost::filesystem::path measPath("D:/pose and 3d/pred_3d_obj_matched_txt" + "/imumeas" + ".txt");
+    std::ofstream outStream2(measPath.c_str());
+    // save Map and submaps as txt file as format " timestamp ........  "
+
     // Create pose of IMU (note we use the bag time)
     geometry_msgs::PoseWithCovarianceStamped poseIinM;
     poseIinM.header.stamp = ros::Time(timestamp_inI);
@@ -308,6 +315,10 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     poseIinM.pose.pose.position.y = state->_imu->pos()(1);
     poseIinM.pose.pose.position.z = state->_imu->pos()(2);
 
+    outStream1 << poseIinM.header.stamp <<" "<< state->_imu->quat()(0) << " " << state->_imu->quat()(1) << " " << state->_imu->quat()(2) << " "
+        << state->_imu->quat()(3) << " ";
+    outStream1 << state->_imu->pos()(0) << " " << state->_imu->pos()(1) << " " << state->_imu->pos()(2) << "\n";
+    outStream1.close();
     // Create measurment of IMU
     sensor_msgs::Imu imu_data;
     imu_data.header.stamp = ros::Time(timestamp_inI);
@@ -326,8 +337,8 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     imu_data.angular_velocity.y = wm(1);
     imu_data.angular_velocity.z = wm(2);
     imu_data.angular_velocity_covariance[0] = -1;
-
-
+    outStream2 << imu_data.header.stamp<<" " << am(0) << " " << am(1) << " " << am(2) << " " << wm(0) << " " << wm(1) << " " << wm(2) << "\n";
+    outStream2.close();
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
     std::vector<Type*> statevars;
     statevars.push_back(state->_imu->pose()->p());
