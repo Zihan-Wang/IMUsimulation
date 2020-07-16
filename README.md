@@ -39,8 +39,17 @@ There are three topics published.
         sensor_msgs::Imu
 + /ov_msckf/measfeat
 
-        ov_msckf::UVListstamped
-more information about structure of UVListstamped in https://github.com/Zihan-Wang/IMUsimulation/tree/master/ov_msckf/msg
+       message::UVListstamped
++ /ov_msckf/odomimu
+       
+       nav_msgs::Odometry
++ /ov_msckf/pathimu
+
+       nav_msgs::Path
++ /message/featsgt
+
+       message::featsgt
+more information about structure of UVListstamped and featsgt in https://github.com/Zihan-Wang/IMUsimulation/tree/master/message/msg
 ## Sample Dataset
 https://github.com/Zihan-Wang/IMUsimulation/tree/master/ov_data/sim
 
@@ -59,6 +68,3 @@ https://github.com/Zihan-Wang/IMUsimulation/tree/master/ov_data/sim
     <arg name="gyroscope_noise_density"        default="1.6968e-04" />
     <arg name="gyroscope_random_walk"          default="1.9393e-05" />
     <arg name="accelerometer_noise_density"    default="2.0000e-3" />
-    
-    <!-- saving data of imu -->
-    <!-- ToDo -->
