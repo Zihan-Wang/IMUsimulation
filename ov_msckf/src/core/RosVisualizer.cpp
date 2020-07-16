@@ -35,17 +35,15 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_poseimu.getTopic().c_str());
     pub_measimu = nh.advertise<sensor_msgs::Imu>("/ov_msckf/measimu", 2);
     ROS_INFO("Publishing: %s", pub_measimu.getTopic().c_str());
-    /*pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat;", 2);
-    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
-    /*pub_measfeat = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/ov_msckf/poseimu", 2);
-    ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());*/
-    /*pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
+    
+    pub_odomimu = nh.advertise<nav_msgs::Odometry>("/ov_msckf/odomimu", 2);
     ROS_INFO("Publishing: %s", pub_odomimu.getTopic().c_str());
     pub_pathimu = nh.advertise<nav_msgs::Path>("/ov_msckf/pathimu", 2);
     ROS_INFO("Publishing: %s", pub_pathimu.getTopic().c_str());
-
+    pub_featsgt = nh.advertise<message::featsgt>("/message/featsgt", 2);
+    ROS_INFO("Publishing: %s", pub_featsgt.getTopic().c_str());
     // 3D points publishing
-    pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
+    /*pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
     pub_points_slam = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_slam", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
@@ -156,13 +154,17 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
 
     // publish state
     publish_imustate(wm, am);
+
+    //publish feats gt
+    publish_featsgt();
 }
+
 
 void RosVisualizer::visualize_odometry(double timestamp) {
 
     // Check if we have subscribers
-    /*if(pub_odomimu.getNumSubscribers()==0)
-        return;*/
+    if(pub_odomimu.getNumSubscribers()==0)
+        return;
 
     // Return if we have not inited and a second has passes
     if(!_app->initialized() || (timestamp - _app->initialized_time()) < 1)
@@ -224,7 +226,7 @@ void RosVisualizer::visualize_odometry(double timestamp) {
     }
 
     // Finally, publish the resulting odometry message
-    /*pub_odomimu.publish(odomIinM);*/
+    pub_odomimu.publish(odomIinM);
 
 
 }
@@ -356,7 +358,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
-    /*pub_pathimu.publish(arrIMU);*/
+    pub_pathimu.publish(arrIMU);
 
     // Move them forward in time
     poses_seq_imu++;
@@ -423,6 +425,24 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     pub_measfeat.publish(uvsmsg);
 }*/
 
+void RosVisualizer::publish_featsgt() {
+
+    message::featsgt featsInG;
+    std::vector<message::Point> Points;
+    featsInG.header.stamp = ros::Time::now();
+    featsInG.header.frame_id = "global";
+    std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
+    for (auto& feat : featmap) {
+        message::Point point;
+        point.id = feat.first;
+        point.point.x = feat.second(0);
+        point.point.y = feat.second(1);
+        point.point.z = feat.second(2);
+        Points.push_back(point);
+    }
+    featsInG.points = Points;
+    pub_featsgt.publish(featsInG);
+}
 
 void RosVisualizer::publish_state() {
 
@@ -478,7 +498,7 @@ void RosVisualizer::publish_state() {
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
-    /*pub_pathimu.publish(arrIMU);*/
+    pub_pathimu.publish(arrIMU);
 
     // Move them forward in time
     poses_seq_imu++;

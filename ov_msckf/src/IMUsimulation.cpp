@@ -29,9 +29,9 @@
 #include "utils/parse_cmd.h"
 #include "utils/colors.h"
 
-#include <ov_msckf/UVmsg.h>
-#include <ov_msckf/UVsmsg.h>
-#include <ov_msckf/UVListstamped.h>
+#include <message/UVmsg.h>
+#include <message/UVsmsg.h>
+#include <message/UVListstamped.h>
 #ifdef ROS_AVAILABLE
 #include <ros/ros.h>
 #include "core/RosVisualizer.h"
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 #ifdef ROS_AVAILABLE
     viz = new RosVisualizer(nh, sys, sim);
     ros::Publisher pub_measfeat;
-    pub_measfeat = nh.advertise<ov_msckf::UVListstamped>("/ov_msckf/measfeat", 2);
+    pub_measfeat = nh.advertise<message::UVListstamped>("/message/measfeat", 2);
     ROS_INFO("Publishing: %s", pub_measfeat.getTopic().c_str());
 #endif
 
@@ -136,17 +136,18 @@ int main(int argc, char** argv)
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
                 viz->visualize_imu(wm, am);
-                ov_msckf::UVListstamped uvsmsg;
-                std::vector<ov_msckf::UVsmsg> points;
+
+                message::UVListstamped uvsmsg;
+                std::vector<message::UVsmsg> points;
                 uvsmsg.header.stamp = ros::Time(time_cam);
                 uvsmsg.header.seq = seq_featList;
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
                 for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
-                    std::vector<ov_msckf::UVmsg> pointL;
-                    ov_msckf::UVsmsg pList;
+                    std::vector<message::UVmsg> pointL;
+                    message::UVsmsg pList;
                     for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
-                        ov_msckf::UVmsg point;
+                        message::UVmsg point;
                         point.id = it->first;
                         point.u = it->second(0);
                         point.v = it->second(1);

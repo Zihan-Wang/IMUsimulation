@@ -30,7 +30,7 @@
     <build_depend>visualization_msgs</build_depend>
     <build_depend>cv_bridge</build_depend>
     <build_depend>ov_core</build_depend>
-    <build_depend>message_generation</build_depend>
+    <build_depend>message</build_depend>
 
 
     <!-- Dependencies needed after this package is compiled. -->
@@ -46,7 +46,7 @@
     <run_depend>ov_core</run_depend>
     <run_depend>ov_eval</run_depend>
     <run_depend>ov_data</run_depend>
-    <run_depend>message_runtime</run_depend>
+    <run_depend>message</run_depend>
 
 
 </package>

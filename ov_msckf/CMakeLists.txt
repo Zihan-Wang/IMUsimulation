@@ -7,26 +7,12 @@ project(ov_msckf)
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 
 # Find catkin (the ROS build system)
-find_package(catkin QUIET COMPONENTS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs cv_bridge ov_core message_generation)
+find_package(catkin QUIET COMPONENTS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs cv_bridge ov_core message)
 
 # Include libraries
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV 3 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread date_time)
-
-add_message_files(
-   FILES
-   UVmsg.msg
-   UVsmsg.msg
-   UVListstamped.msg
-)
-
-generate_messages(
-   DEPENDENCIES
-   std_msgs 
-   geometry_msgs 
-   sensor_msgs
-)
 
 # display message to user
 message(STATUS "EIGEN VERSION: " ${EIGEN3_VERSION})
@@ -37,7 +23,7 @@ message(STATUS "BOOST VERSION: " ${Boost_VERSION})
 if (catkin_FOUND)
     add_definitions(-DROS_AVAILABLE=1)
     catkin_package(
-            CATKIN_DEPENDS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs cv_bridge ov_core message_runtime
+            CATKIN_DEPENDS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs cv_bridge ov_core message
             INCLUDE_DIRS src
             LIBRARIES ov_msckf_lib
     )
@@ -114,7 +100,6 @@ target_include_directories(ov_msckf_lib PUBLIC src)
 ##################################################
 # Make binary files!
 ##################################################
-
 
 if (catkin_FOUND)
 

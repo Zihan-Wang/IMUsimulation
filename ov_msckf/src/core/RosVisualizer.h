@@ -42,7 +42,8 @@
 #include "VioManager.h"
 #include "sim/Simulator.h"
 #include "utils/dataset_reader.h"
-
+#include <message/featsgt.h>
+#include <message/Point.h>
 namespace ov_msckf {
 
 
@@ -87,6 +88,7 @@ namespace ov_msckf {
         void visualize_final();
 
         void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
+
         /*void publish_feat(double time_cam,
         std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);*/
     protected:
@@ -99,7 +101,7 @@ namespace ov_msckf {
 
         /// Publish current features
         void publish_features();
-
+        void publish_featsgt();
         /// Publish groundtruth (if we have it)
         void publish_groundtruth();
 
@@ -119,9 +121,10 @@ namespace ov_msckf {
         ros::Publisher pub_poseimu;
         ros::Publisher pub_measimu;
         /*ros::Publisher pub_measfeat;*/
-        /*ros::Publisher pub_odomimu;
+        ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
-        ros::Publisher pub_points_msckf;
+        ros::Publisher pub_featsgt;
+        /*ros::Publisher pub_points_msckf;
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
         ros::Publisher pub_points_sim;
