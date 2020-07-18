@@ -16,7 +16,9 @@
     <arg name="freq_cam"    default="10" />
     <arg name="freq_imu"    default="400" />
 
-    <arg name="dataset"    default="udel_gore.txt" /> <!-- euroc_V1_01_easy, udel_gore, tum_corridor1_512_16_okvis, udel_arl -->
+    <!-- put this file under ov_data/sim directory, or use absolute path for referencing -->
+
+    <arg name="dataset"    default="indoor_forward_9_snapdragon_with_gt.txt" />
 
     <!-- sensor noise values / update -->
     <arg name="up_msckf_sigma_px"              default="1" />
@@ -46,10 +48,12 @@
     <arg name="path_state_std"  default="$(find ov_eval)/data/sim/state_deviation.txt" />
     <arg name="path_state_gt"   default="$(find ov_eval)/data/sim/state_groundtruth.txt" />
 
-
-
-    <!-- ================================================================ -->
-    <!-- ================================================================ -->
+    <!-- what configuration mode we are in  -->
+    <!-- 0: indoor forward facing  -->
+    <!-- 1: indoor 45 degree downward facing  -->
+    <!-- 2: outdoor forward facing  -->
+    <!-- 3: outdoor 45 degree downward facing  -->
+    <arg name="sensor_config"   default="0" />
 
 
     <!-- MASTER NODE! -->
@@ -128,38 +132,32 @@
         <param name="accelerometer_random_walk"    type="double"   value="$(arg accelerometer_random_walk)" />
 
         <!-- camera intrinsics -->
-        <rosparam param="cam0_wh">[752,480]</rosparam>
-        <rosparam param="cam1_wh">[752,480]</rosparam>
-        <rosparam param="cam2_wh">[752,480]</rosparam>
-        <param name="cam0_is_fisheye" type="bool" value="false" />
-        <param name="cam1_is_fisheye" type="bool" value="false" />
-        <param name="cam2_is_fisheye" type="bool" value="false" />
-        <param name="cam3_is_fisheye" type="bool" value="false" />
-        <rosparam param="cam0_k">[458.654,457.296,367.215,248.375]</rosparam>
-        <rosparam param="cam0_d">[-0.28340811,0.07395907,0.00019359,1.76187114e-05]</rosparam>
-        <rosparam param="cam1_k">[457.587,456.134,379.999,255.238]</rosparam>
-        <rosparam param="cam1_d">[-0.28368365,0.07451284,-0.00010473,-3.55590700e-05]</rosparam>
-        <rosparam param="cam2_k">[457.587,456.134,379.999,255.238]</rosparam>
-        <rosparam param="cam2_d">[-0.28368365,0.07451284,-0.00010473,-3.55590700e-05]</rosparam>
-        <rosparam param="cam3_k">[457.587,456.134,379.999,255.238]</rosparam>
-        <rosparam param="cam3_d">[-0.28368365,0.07451284,-0.00010473,-3.55590700e-05]</rosparam>
+        <rosparam param="cam0_wh">[640, 480]</rosparam>
+        <rosparam param="cam1_wh">[640, 480]</rosparam>
+        <param name="cam0_is_fisheye" type="bool" value="true" />
+        <param name="cam1_is_fisheye" type="bool" value="true" />
 
+        <rosparam param="cam0_k" if="$(eval arg('sensor_config') == 0)">[278.66723066149086, 278.48991409740296, 319.75221200593535, 241.96858910358173]</rosparam>
+        <rosparam param="cam0_d" if="$(eval arg('sensor_config') == 0)">[-0.013721808247486035, 0.020727425669427896, -0.012786476702685545, 0.0025242267320687625]</rosparam>
+        <rosparam param="cam1_k" if="$(eval arg('sensor_config') == 0)">[277.61640629770613, 277.63749695723294, 314.8944703346039, 236.04310050462587]</rosparam>
+        <rosparam param="cam1_d" if="$(eval arg('sensor_config') == 0)">[-0.008456929295619607, 0.011407590938612062, -0.006951788325762078, 0.0015368127092821786]</rosparam>
 
         <!-- camera extrinsics -->
-        <rosparam param="T_C0toI">
+        <!-- indoor forward facing -->
+        <rosparam param="T_C0toI" if="$(eval arg('sensor_config') == 0)">
             [
-             0,-1, 0, -0.05,
-             1, 0, 0,  0.00,
-             0, 0, 1,  0.00,
-             0, 0, 0,  1.00
+            -0.02822879,  0.01440125,  0.99949774,  0.00110212,
+            -0.99960149, -0.00041887, -0.02822568,  0.02170142,
+            0.00001218, -0.99989621,  0.01440734, -0.00005928,
+            0.0, 0.0, 0.0, 1.0
             ]
         </rosparam>
-        <rosparam param="T_C1toI">
+        <rosparam param="T_C1toI" if="$(eval arg('sensor_config') == 0)">
             [
-             0,-1, 0,  0.05,
-             1, 0, 0,  0.00,
-             0, 0, 1,  0.00,
-             0, 0, 0,  1.00
+            -0.01182306,  0.01155299,  0.99986336, -0.00029028,
+            -0.99987014,  0.01081377, -0.01194809, -0.05790695,
+            -0.01095033, -0.99987479,  0.01142364, -0.0001919,
+            0.0, 0.0, 0.0, 1.0
             ]
         </rosparam>
 

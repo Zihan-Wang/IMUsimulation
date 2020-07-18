@@ -36,6 +36,8 @@
 #include <ros/ros.h>
 #include "core/RosVisualizer.h"
 #include "utils/parse_ros.h"
+#include <chrono>
+#include <thread>
 #endif
 
 
@@ -57,7 +59,6 @@ void signal_callback_handler(int signum) {
 // Main function
 int main(int argc, char** argv)
 {
-
     // Read in our parameters
     VioManagerOptions params;
 #ifdef ROS_AVAILABLE
@@ -115,6 +116,9 @@ int main(int argc, char** argv)
     while(sim->ok()) {
 #endif
 
+        // ROS_INFO("Sleeping for 1ms for visualization");
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
         // IMU: get the next simulated IMU measurement if we have it
         double time_imu;
         Eigen::Vector3d wm, am;
@@ -131,6 +135,7 @@ int main(int argc, char** argv)
         std::vector<int> camids;
         std::vector<std::vector<std::pair<size_t,Eigen::VectorXf>>> feats;
         bool hascam = sim->get_next_cam(time_cam, camids, feats);
+
         if(hascam) {
             if(buffer_timecam != -1) {
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
@@ -149,6 +154,10 @@ int main(int argc, char** argv)
                 uvsmsg.header.seq = seq_featList;
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
+
+                // flatten features in different camera;
+                std::vector<std::pair<size_t,Eigen::VectorXf>> featsInAllC;
+
                 for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
                     of_feats << uvsmsg.header.stamp << "," << uvsmsg.header.seq  << "\n";
                     std::vector<message::UVmsg> pointL;
@@ -160,12 +169,16 @@ int main(int argc, char** argv)
                         point.v = it->second(1);
                         pointL.push_back(point);
                         of_feats << it->first << "," << it->second(0) << "," << it->second(1) << "\n";
+                        featsInAllC.push_back(*it);
                     }
                     pList.points = pointL;
                     points.push_back(pList);
                 }
                 uvsmsg.points = points;
                 pub_measfeat.publish(uvsmsg);
+
+                viz->publish_feats_inC(featsInAllC);
+
                 ++seq_featList;
 #endif
             }
