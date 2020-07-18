@@ -36,6 +36,8 @@
 #include <ros/ros.h>
 #include "core/RosVisualizer.h"
 #include "utils/parse_ros.h"
+#include <chrono>
+#include <thread>
 #endif
 
 
@@ -57,7 +59,6 @@ void signal_callback_handler(int signum) {
 // Main function
 int main(int argc, char** argv)
 {
-
     // Read in our parameters
     VioManagerOptions params;
 #ifdef ROS_AVAILABLE
@@ -115,6 +116,9 @@ int main(int argc, char** argv)
     while(sim->ok()) {
 #endif
 
+        // ROS_INFO("Sleeping for 10ms for visualization");
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
         // IMU: get the next simulated IMU measurement if we have it
         double time_imu;
         Eigen::Vector3d wm, am;
@@ -131,6 +135,7 @@ int main(int argc, char** argv)
         std::vector<int> camids;
         std::vector<std::vector<std::pair<size_t,Eigen::VectorXf>>> feats;
         bool hascam = sim->get_next_cam(time_cam, camids, feats);
+
         if(hascam) {
             if(buffer_timecam != -1) {
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);

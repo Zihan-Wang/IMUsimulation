@@ -21,15 +21,9 @@
 #include "VioManager.h"
 #include "types/Landmark.h"
 
-
-
 using namespace ov_core;
 using namespace ov_type;
 using namespace ov_msckf;
-
-
-
-
 
 VioManager::VioManager(VioManagerOptions& params_) {
 

@@ -124,6 +124,8 @@ namespace ov_msckf {
         ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
         ros::Publisher pub_featsgt;
+
+        ros::Publisher pub_points_featsgt;
         /*ros::Publisher pub_points_msckf;
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;

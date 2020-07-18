@@ -42,6 +42,11 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_pathimu.getTopic().c_str());
     pub_featsgt = nh.advertise<message::featsgt>("/message/featsgt", 2);
     ROS_INFO("Publishing: %s", pub_featsgt.getTopic().c_str());
+
+    // 3D points publishing
+    pub_points_featsgt = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsgt", 2);
+    ROS_INFO("Publishing: %s", pub_points_featsgt.getTopic().c_str());
+
     // 3D points publishing
     /*pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
@@ -434,6 +439,8 @@ void RosVisualizer::publish_featsgt() {
     message::featsgt featsInG;
     std::vector<message::Point> Points;
     featsInG.header.stamp = ros::Time::now();
+
+
     featsInG.header.frame_id = "global";
     std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
     for (auto& feat : featmap) {
@@ -446,7 +453,39 @@ void RosVisualizer::publish_featsgt() {
     }
     featsInG.points = Points;
     pub_featsgt.publish(featsInG);
+
+
+    // Publish 3D features and visualize them
+
+    // Declare message and sizes
+    sensor_msgs::PointCloud2 cloud;
+    cloud.header.frame_id = "global";
+    cloud.header.stamp = ros::Time::now();
+    cloud.width  = 3*featmap.size();
+    cloud.height = 1;
+    cloud.is_bigendian = false;
+    cloud.is_dense = false; // there may be invalid points
+
+    // Setup pointcloud fields
+    sensor_msgs::PointCloud2Modifier modifier(cloud);
+    modifier.setPointCloud2FieldsByString(1,"xyz");
+    modifier.resize(3*featmap.size());
+
+    // Iterators
+    sensor_msgs::PointCloud2Iterator<float> out_x(cloud, "x");
+    sensor_msgs::PointCloud2Iterator<float> out_y(cloud, "y");
+    sensor_msgs::PointCloud2Iterator<float> out_z(cloud, "z");
+
+    // Fill our iterators
+    for(const auto &feat : featmap) {
+        *out_x = feat.second(0); ++out_x;
+        *out_y = feat.second(1); ++out_y;
+        *out_z = feat.second(2); ++out_z;
+    }
+
+    pub_points_featsgt.publish(cloud);
 }
+
 
 void RosVisualizer::publish_state() {
 
