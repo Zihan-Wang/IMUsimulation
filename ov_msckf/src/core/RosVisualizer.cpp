@@ -75,7 +75,11 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     // Load if we should save the total state to file
     nh.param<bool>("save_total_state", save_total_state, false);
-
+    std::string path_featsgt;
+    nh.param<std::string>("path_featsgt", path_featsgt, "feats.csv");
+    if (boost::filesystem::exists(path_featsgt))
+        boost::filesystem::remove(path_featsgt);
+    of_feats_gt.open(path_featsgt.c_str());
     // If the file is not open, then open the file
     if(save_total_state) {
 
@@ -847,7 +851,14 @@ void RosVisualizer::publish_groundtruth() {
 
 }
 
-
+void RosVisualizer::save_featsgt() {
+    if (_sim != nullptr) {
+        std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
+        for (auto& feat : featmap) {
+            of_feats_gt << feat.first << "," << feat.second(0) << "," << feat.second(1) << "," << feat.second(2) << "\n";
+        }
+    }
+}
 
 
 

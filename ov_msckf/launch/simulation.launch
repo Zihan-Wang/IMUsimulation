@@ -35,6 +35,7 @@
     <arg name="sim_do_calibration"  default="true" />
 
     <!-- saving trajectory paths -->
+    <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
     <arg name="dosave_pose"     default="false" />
     <arg name="path_est"        default="$(find ov_eval)/data/sim/traj_estimate.txt" />
     <arg name="path_gt"         default="$(find ov_eval)/data/sim/traj_groundtruth.txt" />
@@ -42,6 +43,7 @@
     <arg name="path_state_est"  default="$(find ov_eval)/data/sim/state_estimate.txt" />
     <arg name="path_state_std"  default="$(find ov_eval)/data/sim/state_deviation.txt" />
     <arg name="path_state_gt"   default="$(find ov_eval)/data/sim/state_groundtruth.txt" />
+
 
 
     <!-- ================================================================ -->
@@ -65,6 +67,7 @@
         <param name="sim_do_perturbation"    type="bool"   value="$(arg sim_do_perturbation)" />
         <param name="sim_distance_threshold" type="double" value="1.2" />
 
+        <param name="path_featsgt"      type="string" value="$(arg path_featsgt)" />
         <param name="save_total_state"  type="bool"   value="$(arg dosave_state)" />
         <param name="filepath_est"      type="string" value="$(arg path_state_est)" />
         <param name="filepath_std"      type="string" value="$(arg path_state_std)" />

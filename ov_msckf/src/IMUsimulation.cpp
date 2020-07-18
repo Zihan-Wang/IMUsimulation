@@ -177,6 +177,7 @@ int main(int argc, char** argv)
     // Final visualization
 #ifdef ROS_AVAILABLE
     viz->visualize_final();
+    viz->save_featsgt();
     delete viz;
 #endif
 
