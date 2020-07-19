@@ -148,6 +148,11 @@ int main(int argc, char** argv)
                 uvsmsg.header.seq = seq_featList;
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
+
+
+                // flatten fitures in different camera;
+                std::vector<std::pair<size_t,Eigen::VectorXf>> featsInAllC;
+
                 for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
                     std::vector<message::UVmsg> pointL;
                     message::UVsmsg pList;
@@ -157,12 +162,17 @@ int main(int argc, char** argv)
                         point.u = it->second(0);
                         point.v = it->second(1);
                         pointL.push_back(point);
+                        featsInAllC.push_back(*it);
                     }
                     pList.points = pointL;
                     points.push_back(pList);
                 }
                 uvsmsg.points = points;
                 pub_measfeat.publish(uvsmsg);
+
+                viz->publish_feats_inC(featsInAllC);
+
+
                 ++seq_featList;
 #endif
             }

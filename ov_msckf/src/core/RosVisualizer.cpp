@@ -47,6 +47,8 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     pub_points_featsgt = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsgt", 2);
     ROS_INFO("Publishing: %s", pub_points_featsgt.getTopic().c_str());
 
+    pub_points_featsinC = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsinC", 2);
+    ROS_INFO("Publishing: %s", pub_points_featsinC.getTopic().c_str());
     // 3D points publishing
     /*pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
@@ -457,6 +459,7 @@ void RosVisualizer::publish_featsgt() {
 
     // Publish 3D features and visualize them
 
+    /*
     // Declare message and sizes
     sensor_msgs::PointCloud2 cloud;
     cloud.header.frame_id = "global";
@@ -484,6 +487,42 @@ void RosVisualizer::publish_featsgt() {
     }
 
     pub_points_featsgt.publish(cloud);
+    */
+}
+
+void RosVisualizer::publish_feats_inC(std::vector<std::pair<size_t,Eigen::VectorXf>> feats) {
+
+    // Publish the point cloud for visualization;
+    sensor_msgs::PointCloud2 cloud;
+    cloud.header.frame_id = "global";
+    cloud.header.stamp = ros::Time::now();
+    cloud.width  = 3*feats.size();
+    cloud.height = 1;
+    cloud.is_bigendian = false;
+    cloud.is_dense = false; // there may be invalid points
+
+    // Setup pointcloud fields
+    sensor_msgs::PointCloud2Modifier modifier(cloud);
+    modifier.setPointCloud2FieldsByString(1,"xyz");
+    modifier.resize(3*feats.size());
+
+    // Iterators
+    sensor_msgs::PointCloud2Iterator<float> out_x(cloud, "x");
+    sensor_msgs::PointCloud2Iterator<float> out_y(cloud, "y");
+    sensor_msgs::PointCloud2Iterator<float> out_z(cloud, "z");
+
+    std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
+
+    // Iterate through all features in camera;
+    for (auto it = feats.begin(); it != feats.end(); ++it) {
+        size_t id = it->first;
+        Eigen::Vector3d feat = featmap.at(id);
+
+        *out_x = feat(0); ++out_x;
+        *out_y = feat(1); ++out_y;
+        *out_z = feat(2); ++out_z;
+    }
+    pub_points_featsinC.publish(cloud);
 }
 
 

@@ -88,6 +88,10 @@ namespace ov_msckf {
         void visualize_final();
 
         void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
+        
+        // Publish the 3D positions of the features in current camera;
+        void publish_feats_inC(std::vector<std::pair<size_t,Eigen::VectorXf>> feats);
+
         void save_featsgt();
         /*void publish_feat(double time_cam,
         std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);*/
@@ -102,6 +106,7 @@ namespace ov_msckf {
         /// Publish current features
         void publish_features();
         void publish_featsgt();
+
         /// Publish groundtruth (if we have it)
         void publish_groundtruth();
 
@@ -126,6 +131,7 @@ namespace ov_msckf {
         ros::Publisher pub_featsgt;
 
         ros::Publisher pub_points_featsgt;
+        ros::Publisher pub_points_featsinC;
         /*ros::Publisher pub_points_msckf;
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
