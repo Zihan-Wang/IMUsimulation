@@ -132,6 +132,8 @@ namespace ov_msckf {
 
         ros::Publisher pub_points_featsgt;
         ros::Publisher pub_points_featsinC;
+
+        ros::Publisher pub_pathgt;
         /*ros::Publisher pub_points_msckf;
         ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
@@ -145,8 +147,7 @@ namespace ov_msckf {
         vector<geometry_msgs::PoseStamped> poses_imu;
 
         // Groundtruth infomation
-        /*ros::Publisher pub_pathgt;
-        ros::Publisher pub_posegt;*/
+        /*ros::Publisher pub_posegt;*/
         double summed_rmse_ori = 0.0;
         double summed_rmse_pos = 0.0;
         double summed_nees_ori = 0.0;

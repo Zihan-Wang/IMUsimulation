@@ -49,6 +49,12 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     pub_points_featsinC = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsinC", 2);
     ROS_INFO("Publishing: %s", pub_points_featsinC.getTopic().c_str());
+
+
+    // Ground-truth pose publishing
+    pub_pathgt = nh.advertise<nav_msgs::Path>("/ov_msckf/pathgt", 2);
+    ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());
+    
     // 3D points publishing
     /*pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
@@ -59,15 +65,14 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     pub_points_sim = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_sim", 2);
     ROS_INFO("Publishing: %s", pub_points_sim.getTopic().c_str());
 
+
     // Our tracking image
     pub_tracks = nh.advertise<sensor_msgs::Image>("/ov_msckf/trackhist", 2);
     ROS_INFO("Publishing: %s", pub_tracks.getTopic().c_str());
 
     // Groundtruth publishers
     pub_posegt = nh.advertise<geometry_msgs::PoseStamped>("/ov_msckf/posegt", 2);
-    ROS_INFO("Publishing: %s", pub_posegt.getTopic().c_str());
-    pub_pathgt = nh.advertise<nav_msgs::Path>("/ov_msckf/pathgt", 2);
-    ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());*/
+    ROS_INFO("Publishing: %s", pub_posegt.getTopic().c_str()); */
 
     // option to enable publishing of global to IMU transformation
     nh.param<bool>("publish_global_to_imu_tf", publish_global2imu_tf, true);
@@ -166,8 +171,11 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
     // publish state
     publish_imustate(wm, am);
 
-    //publish feats gt
+    // publish feats gt
     publish_featsgt();
+
+    // publish IMU ground-truth;
+    publish_groundtruth();
 }
 
 
@@ -297,6 +305,9 @@ void RosVisualizer::visualize_final() {
 }
 
 
+/*
+ * Publish the state of IMU as well as IMU measurements using the simulated wm, am;
+ */ 
 void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
 
     // Get the current state
@@ -858,7 +869,7 @@ void RosVisualizer::publish_groundtruth() {
     arrIMU.header.seq = poses_seq_gt;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_gt;
-    /*pub_pathgt.publish(arrIMU);*/
+    pub_pathgt.publish(arrIMU);
 
     // Move them forward in time
     poses_seq_gt++;

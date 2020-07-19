@@ -149,8 +149,7 @@ int main(int argc, char** argv)
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
 
-
-                // flatten fitures in different camera;
+                // flatten features in different camera;
                 std::vector<std::pair<size_t,Eigen::VectorXf>> featsInAllC;
 
                 for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
