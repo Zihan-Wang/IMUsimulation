@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 #endif
 
         // ROS_INFO("Sleeping for 10ms for visualization");
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // IMU: get the next simulated IMU measurement if we have it
         double time_imu;
@@ -170,7 +170,6 @@ int main(int argc, char** argv)
                 pub_measfeat.publish(uvsmsg);
 
                 viz->publish_feats_inC(featsInAllC);
-
 
                 ++seq_featList;
 #endif

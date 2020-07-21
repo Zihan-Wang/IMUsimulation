@@ -46,9 +46,12 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     // 3D points publishing
     pub_points_featsgt = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsgt", 2);
     ROS_INFO("Publishing: %s", pub_points_featsgt.getTopic().c_str());
-
     pub_points_featsinC = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsinC", 2);
     ROS_INFO("Publishing: %s", pub_points_featsinC.getTopic().c_str());
+    pub_points_featshist = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featshist", 2);
+    ROS_INFO("Publishing: %s", pub_points_featshist.getTopic().c_str());
+    pub_points_featsseen = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_featsseen", 2);
+    ROS_INFO("Publishing: %s", pub_points_featshist.getTopic().c_str());
 
 
     // Ground-truth pose publishing
@@ -56,16 +59,19 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());
     
     // 3D points publishing
-    /*pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
-    ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
+    /*
     pub_points_slam = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_slam", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
     pub_points_aruco = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_aruco", 2);
     ROS_INFO("Publishing: %s", pub_points_aruco.getTopic().c_str());
+    
+    pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
+    ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
     pub_points_sim = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_sim", 2);
-    ROS_INFO("Publishing: %s", pub_points_sim.getTopic().c_str());
+    ROS_INFO("Publishing: %s", pub_points_sim.getTopic().c_str());*/
 
 
+    /*
     // Our tracking image
     pub_tracks = nh.advertise<sensor_msgs::Image>("/ov_msckf/trackhist", 2);
     ROS_INFO("Publishing: %s", pub_tracks.getTopic().c_str());
@@ -171,11 +177,15 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
     // publish state
     publish_imustate(wm, am);
 
+    // publish features in IMU frame;
+    publish_features();
+
     // publish feats gt
     publish_featsgt();
 
     // publish IMU ground-truth;
     publish_groundtruth();
+
 }
 
 
@@ -524,6 +534,9 @@ void RosVisualizer::publish_feats_inC(std::vector<std::pair<size_t,Eigen::Vector
 
     std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
 
+    feats_seen.clear();
+
+
     // Iterate through all features in camera;
     for (auto it = feats.begin(); it != feats.end(); ++it) {
         size_t id = it->first;
@@ -532,10 +545,83 @@ void RosVisualizer::publish_feats_inC(std::vector<std::pair<size_t,Eigen::Vector
         *out_x = feat(0); ++out_x;
         *out_y = feat(1); ++out_y;
         *out_z = feat(2); ++out_z;
+        
+        
+        std::unordered_map<size_t, Eigen::Vector3d>::const_iterator feat_found = feats_hist.find(id);
+        // Has not seen the feature before, add it to our history
+        if (feat_found != feats_hist.end()) {
+            feats_seen.insert({it->first, feat});
+            continue;
+        } else {
+            feats_hist.insert({it->first, feat});
+        }
+
     }
     pub_points_featsinC.publish(cloud);
+    publish_featshist();
+    publish_featsseen();
 }
 
+void RosVisualizer::publish_featsseen(){
+        // publish the features that have been seen before;
+    sensor_msgs::PointCloud2 cloud;
+    cloud.header.frame_id = "global";
+    cloud.header.stamp = ros::Time::now();
+    cloud.width  = 3*feats_seen.size();
+    cloud.height = 1;
+    cloud.is_bigendian = false;
+    cloud.is_dense = false; // there may be invalid points
+
+    // Setup pointcloud fields
+    sensor_msgs::PointCloud2Modifier modifier(cloud);
+    modifier.setPointCloud2FieldsByString(1,"xyz");
+    modifier.resize(3*feats_seen.size());
+
+    // Iterators
+    sensor_msgs::PointCloud2Iterator<float> out_x(cloud, "x");
+    sensor_msgs::PointCloud2Iterator<float> out_y(cloud, "y");
+    sensor_msgs::PointCloud2Iterator<float> out_z(cloud, "z");
+
+    for (auto it = feats_seen.begin(); it != feats_seen.end(); ++it) {
+        Eigen::Vector3d feat = it->second;
+        *out_x = feat(0); ++out_x;
+        *out_y = feat(1); ++out_y;
+        *out_z = feat(2); ++out_z;
+    }
+
+    pub_points_featsseen.publish(cloud);
+}
+
+void RosVisualizer::publish_featshist() {
+
+    // Publish the point cloud for visualization;
+    sensor_msgs::PointCloud2 cloud;
+    cloud.header.frame_id = "global";
+    cloud.header.stamp = ros::Time::now();
+    cloud.width  = 3*feats_hist.size();
+    cloud.height = 1;
+    cloud.is_bigendian = false;
+    cloud.is_dense = false; // there may be invalid points
+
+    // Setup pointcloud fields
+    sensor_msgs::PointCloud2Modifier modifier(cloud);
+    modifier.setPointCloud2FieldsByString(1,"xyz");
+    modifier.resize(3*feats_hist.size());
+
+    // Iterators
+    sensor_msgs::PointCloud2Iterator<float> out_x(cloud, "x");
+    sensor_msgs::PointCloud2Iterator<float> out_y(cloud, "y");
+    sensor_msgs::PointCloud2Iterator<float> out_z(cloud, "z");
+
+    // Iterate through all features in camera;
+    for (auto it = feats_hist.begin(); it != feats_hist.end(); ++it) {
+        Eigen::Vector3d feat = it->second;
+        *out_x = feat(0); ++out_x;
+        *out_y = feat(1); ++out_y;
+        *out_z = feat(2); ++out_z;
+    }
+    pub_points_featshist.publish(cloud);
+}
 
 void RosVisualizer::publish_state() {
 
@@ -704,7 +790,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    /*pub_points_msckf.publish(cloud);*/
+    // pub_points_msckf.publish(cloud);
 
     //====================================================================
     //====================================================================
@@ -780,10 +866,12 @@ void RosVisualizer::publish_features() {
     //====================================================================
     //====================================================================
 
+    
     // Skip the rest of we are not doing simulation
     if(_sim == nullptr)
         return;
 
+    /*
     // Get our good features
     std::unordered_map<size_t,Eigen::Vector3d> feats_sim = _sim->get_map();
 
@@ -814,7 +902,8 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    /*pub_points_sim.publish(cloud_SIM);*/
+    pub_points_sim.publish(cloud_SIM);
+    */
 
 }
 
