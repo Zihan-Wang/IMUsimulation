@@ -68,3 +68,6 @@ https://github.com/Zihan-Wang/IMUsimulation/tree/master/ov_data/sim
     <arg name="gyroscope_noise_density"        default="1.6968e-04" />
     <arg name="gyroscope_random_walk"          default="1.9393e-05" />
     <arg name="accelerometer_noise_density"    default="2.0000e-3" />
+    
+    
+    <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
