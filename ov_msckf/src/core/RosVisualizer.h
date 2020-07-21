@@ -91,6 +91,7 @@ namespace ov_msckf {
         void save_featsgt();
         /*void publish_feat(double time_cam,
         std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);*/
+        std::string  path_featdir;
     protected:
 
         /// Publish the current state
@@ -160,8 +161,7 @@ namespace ov_msckf {
 
         // Files and if we should save total state
         bool save_total_state;
-        std::ofstream of_state_est, of_state_std, of_state_gt, of_feats_gt;
-
+        std::ofstream of_state_est, of_state_std, of_state_gt, of_feats_gt, of_imu_pose;
     };
 
 

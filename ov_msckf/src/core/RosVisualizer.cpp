@@ -75,11 +75,17 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     // Load if we should save the total state to file
     nh.param<bool>("save_total_state", save_total_state, false);
-    std::string path_featsgt;
+    std::string path_featsgt, path_imu_pose;
     nh.param<std::string>("path_featsgt", path_featsgt, "feats.csv");
+    nh.param<std::string>("path_imu_pose", path_imu_pose, "imupose.csv");
+    nh.param<std::string>("path_featdir", path_featdir, "featsmeas");
     if (boost::filesystem::exists(path_featsgt))
         boost::filesystem::remove(path_featsgt);
     of_feats_gt.open(path_featsgt.c_str());
+
+    if (boost::filesystem::exists(path_imu_pose))
+        boost::filesystem::remove(path_imu_pose);
+    of_imu_pose.open(path_imu_pose.c_str());
     // If the file is not open, then open the file
     if(save_total_state) {
 
@@ -313,7 +319,9 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     poseIinM.pose.pose.position.y = state->_imu->pos()(1);
     poseIinM.pose.pose.position.z = state->_imu->pos()(2);
 
-
+    of_imu_pose << poseIinM.header.stamp << "," << poseIinM.header.seq << "," << poseIinM.pose.pose.position.x << ","
+        << poseIinM.pose.pose.position.y << "," << poseIinM.pose.pose.position.z << ","<<poseIinM.pose.pose.orientation.x 
+        << "," << poseIinM.pose.pose.orientation.y << "," << poseIinM.pose.pose.orientation.z << ","<< poseIinM.pose.pose.orientation.w << "\n";
     // Create measurment of IMU
     sensor_msgs::Imu imu_data;
     imu_data.header.stamp = ros::Time(timestamp_inI);

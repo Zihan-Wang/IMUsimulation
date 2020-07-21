@@ -136,6 +136,12 @@ int main(int argc, char** argv)
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
                 viz->visualize_imu(wm, am);
+                std::string path_feats;
+                path_feats = viz->path_featdir + "/" + std::to_string(seq_featList) + ".csv";
+                if (boost::filesystem::exists(path_feats))
+                    boost::filesystem::remove(path_feats);
+                std::ofstream of_feats;
+                of_feats.open(path_feats.c_str());
 
                 message::UVListstamped uvsmsg;
                 std::vector<message::UVsmsg> points;
@@ -144,6 +150,7 @@ int main(int argc, char** argv)
                 uvsmsg.header.frame_id = "cam";
                 uvsmsg.cam_id = camids;
                 for (auto featsInC = feats.begin(); featsInC != feats.end(); ++featsInC) {
+                    of_feats << uvsmsg.header.stamp << "," << uvsmsg.header.seq  << "\n";
                     std::vector<message::UVmsg> pointL;
                     message::UVsmsg pList;
                     for (auto it = featsInC->begin(); it != featsInC->end(); ++it) {
@@ -152,6 +159,7 @@ int main(int argc, char** argv)
                         point.u = it->second(0);
                         point.v = it->second(1);
                         pointL.push_back(point);
+                        of_feats << it->first << "," << it->second(0) << "," << it->second(1) << "\n";
                     }
                     pList.points = pointL;
                     points.push_back(pList);

@@ -36,6 +36,8 @@
 
     <!-- saving trajectory paths -->
     <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
+    <arg name="path_imu_pose"   default="$(find ov_data)/sim/imupose.csv" />
+    <arg name="path_featdir"    default="$(find ov_data)/sim/featsmeas" />
     <arg name="dosave_pose"     default="false" />
     <arg name="path_est"        default="$(find ov_eval)/data/sim/traj_estimate.txt" />
     <arg name="path_gt"         default="$(find ov_eval)/data/sim/traj_groundtruth.txt" />
@@ -68,6 +70,8 @@
         <param name="sim_distance_threshold" type="double" value="1.2" />
 
         <param name="path_featsgt"      type="string" value="$(arg path_featsgt)" />
+        <param name="path_imu_pose"     type="string" value="$(arg path_imu_pose)" />
+        <param name="path_featdir"      type="string" value="$(arg path_featdir)" />
         <param name="save_total_state"  type="bool"   value="$(arg dosave_state)" />
         <param name="filepath_est"      type="string" value="$(arg path_state_est)" />
         <param name="filepath_std"      type="string" value="$(arg path_state_std)" />
