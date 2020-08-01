@@ -1,4 +1,4 @@
-/*
+/*visualize_odometry
  * OpenVINS: An Open Platform for Visual-Inertial Research
  * Copyright (C) 2019 Patrick Geneva
  * Copyright (C) 2019 Kevin Eckenhoff
@@ -14,7 +14,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ *visualize_odometry
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -217,7 +217,8 @@ void RosVisualizer::visualize_odometry(double timestamp) {
 
     // Our odometry message
     nav_msgs::Odometry odomIinM;
-    odomIinM.header.stamp = ros::Time(timestamp);
+    // odomIinM.header.stamp = ros::Time(timestamp);
+    odomIinM.header.stamp = ros::Time::now();
     odomIinM.header.frame_id = "global";
 
     // The POSE component (orientation and position)
@@ -675,6 +676,7 @@ void RosVisualizer::publish_state() {
             poseIinM.pose.covariance[6*r+c] = covariance_posori(r,c);
         }
     }
+
     pub_poseimu.publish(poseIinM);
 
 
@@ -693,6 +695,7 @@ void RosVisualizer::publish_state() {
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
+
     pub_pathimu.publish(arrIMU);
 
     // Move them forward in time
