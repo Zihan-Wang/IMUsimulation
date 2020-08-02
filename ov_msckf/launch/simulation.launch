@@ -38,6 +38,7 @@
     <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
     <arg name="path_imu_pose"   default="$(find ov_data)/sim/imupose.csv" />
     <arg name="path_featdir"    default="$(find ov_data)/sim/featsmeas" />
+    <arg name="path_imu_meas"    default="$(find ov_data)/sim/imumeas.csv" />
     <arg name="dosave_pose"     default="false" />
     <arg name="path_est"        default="$(find ov_eval)/data/sim/traj_estimate.txt" />
     <arg name="path_gt"         default="$(find ov_eval)/data/sim/traj_groundtruth.txt" />

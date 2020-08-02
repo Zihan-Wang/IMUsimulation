@@ -75,9 +75,10 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     // Load if we should save the total state to file
     nh.param<bool>("save_total_state", save_total_state, false);
-    std::string path_featsgt, path_imu_pose;
+    std::string path_featsgt, path_imu_pose, path_imu_meas;
     nh.param<std::string>("path_featsgt", path_featsgt, "feats.csv");
     nh.param<std::string>("path_imu_pose", path_imu_pose, "imupose.csv");
+    nh.param<std::string>("path_imu_meas", path_imu_meas, "imumeas.csv");
     nh.param<std::string>("path_featdir", path_featdir, "featsmeas");
     if (boost::filesystem::exists(path_featsgt))
         boost::filesystem::remove(path_featsgt);
@@ -86,6 +87,10 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     if (boost::filesystem::exists(path_imu_pose))
         boost::filesystem::remove(path_imu_pose);
     of_imu_pose.open(path_imu_pose.c_str());
+
+    if (boost::filesystem::exists(path_imu_meas))
+        boost::filesystem::remove(path_imu_meas);
+    of_imu_meas.open(path_imu_meas.c_str());
     // If the file is not open, then open the file
     if(save_total_state) {
 
@@ -340,7 +345,8 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     imu_data.angular_velocity.y = wm(1);
     imu_data.angular_velocity.z = wm(2);
     imu_data.angular_velocity_covariance[0] = -1;
-
+    of_imu_meas << imu_data.header.stamp << "," << imu_data.linear_acceleration.x << "," << imu_data.linear_acceleration.y << "," 
+        << imu_data.linear_acceleration.z << "," << imu_data.angular_velocity.x << "," << imu_data.angular_velocity.y << "," << imu_data.angular_velocity.z << "\n";
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
     std::vector<Type*> statevars;
     statevars.push_back(state->_imu->pose()->p());
