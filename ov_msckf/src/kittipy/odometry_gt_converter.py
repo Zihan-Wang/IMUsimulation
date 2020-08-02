@@ -22,10 +22,8 @@ raw_data = pykitti.raw(raw_data_path, date, drive)
 
 output_path = os.path.join(odometry_path, "poses/" + sequence + "_converted.txt")
 
-# print(raw_data.calib)
-
+# Transform the coordinate, such that the z axis point upwards. 
 P = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]])
-
 
 poses_camk_imu = [P.dot(T.dot(raw_data.calib.T_cam0_imu)) for T in odometry_data.poses]
 

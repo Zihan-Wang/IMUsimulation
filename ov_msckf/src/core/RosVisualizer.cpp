@@ -356,7 +356,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     poseIinM.pose.pose.position.y = state->_imu->pos()(1);
     poseIinM.pose.pose.position.z = state->_imu->pos()(2);
 
-    of_imu_pose << poseIinM.header.stamp << "," << poseIinM.header.seq << "," << poseIinM.pose.pose.position.x << ","
+    of_imu_pose << poseIinM.header.stamp << "," << poseIinM.pose.pose.position.x << ","
         << poseIinM.pose.pose.position.y << "," << poseIinM.pose.pose.position.z << ","<<poseIinM.pose.pose.orientation.x 
         << "," << poseIinM.pose.pose.orientation.y << "," << poseIinM.pose.pose.orientation.z << ","<< poseIinM.pose.pose.orientation.w << "\n";
     // Create measurment of IMU
