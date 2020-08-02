@@ -463,11 +463,6 @@ void Simulator::load_data(std::string path_traj) {
 }
 
 
-
-
-
-
-
 std::vector<std::pair<size_t,Eigen::VectorXf>> Simulator::project_pointcloud(const Eigen::Matrix3d &R_GtoI, const Eigen::Vector3d &p_IinG,
                                                                              int camid, const std::unordered_map<size_t,Eigen::Vector3d> &feats) {
 

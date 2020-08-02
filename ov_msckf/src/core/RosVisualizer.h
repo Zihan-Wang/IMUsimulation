@@ -88,6 +88,13 @@ namespace ov_msckf {
         void visualize_final();
 
         void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
+        
+        // Publish the 3D positions of the features in current camera;
+        void publish_feats_inC(std::vector<std::pair<size_t,Eigen::VectorXf>> feats);
+
+        // Publish all the 3D positions of the features we have seen so far; 
+        void publish_featshist();
+
         void save_featsgt();
         /*void publish_feat(double time_cam,
         std::vector<int> camids, std::vector<std::vector<std::pair<size_t, Eigen::VectorXf>>> feats);*/
@@ -100,9 +107,11 @@ namespace ov_msckf {
         /// Publish the active tracking image
         void publish_images();
 
-        /// Publish current features
+        /// Publish features
         void publish_features();
         void publish_featsgt();
+        void publish_featsseen();
+
         /// Publish groundtruth (if we have it)
         void publish_groundtruth();
 
@@ -125,10 +134,17 @@ namespace ov_msckf {
         ros::Publisher pub_odomimu;
         ros::Publisher pub_pathimu;
         ros::Publisher pub_featsgt;
-        /*ros::Publisher pub_points_msckf;
-        ros::Publisher pub_points_slam;
+
+        ros::Publisher pub_points_featsgt;
+        ros::Publisher pub_points_featsinC;
+        ros::Publisher pub_points_featshist;
+        ros::Publisher pub_points_featsseen;
+
+        ros::Publisher pub_pathgt;
+        // ros::Publisher pub_points_msckf;
+        // ros::Publisher pub_points_sim;
+        /* ros::Publisher pub_points_slam;
         ros::Publisher pub_points_aruco;
-        ros::Publisher pub_points_sim;
         ros::Publisher pub_tracks;*/
         tf::TransformBroadcaster *mTfBr;
 
@@ -138,8 +154,7 @@ namespace ov_msckf {
         vector<geometry_msgs::PoseStamped> poses_imu;
 
         // Groundtruth infomation
-        /*ros::Publisher pub_pathgt;
-        ros::Publisher pub_posegt;*/
+        /*ros::Publisher pub_posegt;*/
         double summed_rmse_ori = 0.0;
         double summed_rmse_pos = 0.0;
         double summed_nees_ori = 0.0;
@@ -152,6 +167,12 @@ namespace ov_msckf {
 
         // Our groundtruth states
         std::map<double, Eigen::Matrix<double,17,1>> gt_states;
+
+        // For visulizing history of features
+        std::unordered_map<size_t, Eigen::Vector3d> feats_hist;
+
+        // Seen feature in camera frame;
+        std::unordered_map<size_t, Eigen::Vector3d> feats_seen;
 
         // For path viz
         unsigned int poses_seq_gt = 0;
