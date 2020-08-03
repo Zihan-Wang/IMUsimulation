@@ -1,4 +1,4 @@
-/*
+/*visualize_odometry
  * OpenVINS: An Open Platform for Visual-Inertial Research
  * Copyright (C) 2019 Patrick Geneva
  * Copyright (C) 2019 Kevin Eckenhoff
@@ -14,7 +14,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ *visualize_odometry
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -221,7 +221,8 @@ void RosVisualizer::visualize_odometry(double timestamp) {
 
     // Our odometry message
     nav_msgs::Odometry odomIinM;
-    odomIinM.header.stamp = ros::Time(timestamp);
+    // odomIinM.header.stamp = ros::Time(timestamp);
+    odomIinM.header.stamp = ros::Time::now();
     odomIinM.header.frame_id = "global";
 
     // The POSE component (orientation and position)
@@ -330,7 +331,6 @@ void RosVisualizer::visualize_final() {
     rT2 =  boost::posix_time::microsec_clock::local_time();
     printf(REDPURPLE "TIME: %.3f seconds\n\n" RESET,(rT2-rT1).total_microseconds()*1e-6);
 
-    // close all stream;
     of_imu_meas.close();
 
     if (save_total_state) {
@@ -367,7 +367,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     poseIinM.pose.pose.position.y = state->_imu->pos()(1);
     poseIinM.pose.pose.position.z = state->_imu->pos()(2);
 
-    of_imu_pose << poseIinM.header.stamp << "," << poseIinM.header.seq << "," << poseIinM.pose.pose.position.x << ","
+    of_imu_pose << poseIinM.header.stamp << "," << poseIinM.pose.pose.position.x << ","
         << poseIinM.pose.pose.position.y << "," << poseIinM.pose.pose.position.z << ","<<poseIinM.pose.pose.orientation.x 
         << "," << poseIinM.pose.pose.orientation.y << "," << poseIinM.pose.pose.orientation.z << ","<< poseIinM.pose.pose.orientation.w << "\n";
     
@@ -690,6 +690,7 @@ void RosVisualizer::publish_state() {
             poseIinM.pose.covariance[6*r+c] = covariance_posori(r,c);
         }
     }
+
     pub_poseimu.publish(poseIinM);
 
 
@@ -708,6 +709,7 @@ void RosVisualizer::publish_state() {
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
+
     pub_pathimu.publish(arrIMU);
 
     // Move them forward in time
