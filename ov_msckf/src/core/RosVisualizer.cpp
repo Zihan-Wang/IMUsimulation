@@ -329,7 +329,6 @@ void RosVisualizer::visualize_final() {
     printf(REDPURPLE "TIME: %.3f seconds\n\n" RESET,(rT2-rT1).total_microseconds()*1e-6);
 
     // close all stream;
-    of_feats_gt.close();
     of_imu_pose.close();
     of_imu_meas.close();
 
@@ -1067,6 +1066,7 @@ void RosVisualizer::save_featsgt() {
             of_feats_gt << feat.first << "," << feat.second(0) << "," << feat.second(1) << "," << feat.second(2) << "\n";
         }
     }
+    of_feats_gt.close();
 }
 
 
