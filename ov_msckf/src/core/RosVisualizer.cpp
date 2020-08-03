@@ -1063,6 +1063,9 @@ void RosVisualizer::publish_groundtruth() {
 }
 
 void RosVisualizer::save_featsgt() {
+    if(!of_feats_gt.is_open()) {
+        printf(REDPURPLE "can not save feats");
+    }
     if (_sim != nullptr) {
         std::unordered_map<size_t, Eigen::Vector3d> featmap = _sim->get_map();
         for (auto& feat : featmap) {
