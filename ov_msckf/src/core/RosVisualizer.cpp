@@ -101,7 +101,10 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     if (boost::filesystem::exists(path_featsgt))
         boost::filesystem::remove(path_featsgt);
     of_feats_gt.open(path_featsgt.c_str());
-
+    
+    if (!boost::filesystem::exists(path_featsgt))
+        printf("\n can not open featsgt \n");
+    
     if (boost::filesystem::exists(path_imu_pose))
         boost::filesystem::remove(path_imu_pose);
     of_imu_pose.open(path_imu_pose.c_str());
