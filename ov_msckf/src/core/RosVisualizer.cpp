@@ -331,7 +331,6 @@ void RosVisualizer::visualize_final() {
     printf(REDPURPLE "TIME: %.3f seconds\n\n" RESET,(rT2-rT1).total_microseconds()*1e-6);
 
     // close all stream;
-    of_imu_pose.close();
     of_imu_meas.close();
 
     if (save_total_state) {
