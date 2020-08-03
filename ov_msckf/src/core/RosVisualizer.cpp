@@ -108,7 +108,9 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     if (boost::filesystem::exists(path_imu_meas))
         boost::filesystem::remove(path_imu_meas);
+
     of_imu_meas.open(path_imu_meas.c_str());
+
     // If the file is not open, then open the file
     if(save_total_state) {
 
@@ -326,6 +328,16 @@ void RosVisualizer::visualize_final() {
     rT2 =  boost::posix_time::microsec_clock::local_time();
     printf(REDPURPLE "TIME: %.3f seconds\n\n" RESET,(rT2-rT1).total_microseconds()*1e-6);
 
+    // close all stream;
+    of_feats_gt.close();
+    of_imu_pose.close();
+    of_imu_meas.close();
+
+    if (save_total_state) {
+        of_state_est.close();
+        of_state_std.close();
+        of_state_gt.close(); 
+    }
 }
 
 
@@ -358,6 +370,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     of_imu_pose << poseIinM.header.stamp << "," << poseIinM.header.seq << "," << poseIinM.pose.pose.position.x << ","
         << poseIinM.pose.pose.position.y << "," << poseIinM.pose.pose.position.z << ","<<poseIinM.pose.pose.orientation.x 
         << "," << poseIinM.pose.pose.orientation.y << "," << poseIinM.pose.pose.orientation.z << ","<< poseIinM.pose.pose.orientation.w << "\n";
+    
     // Create measurment of IMU
     sensor_msgs::Imu imu_data;
     imu_data.header.stamp = ros::Time(timestamp_inI);
@@ -376,6 +389,8 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     imu_data.angular_velocity.y = wm(1);
     imu_data.angular_velocity.z = wm(2);
     imu_data.angular_velocity_covariance[0] = -1;
+
+    printf("Writing IMU data...");
     of_imu_meas << imu_data.header.stamp << "," << imu_data.linear_acceleration.x << "," << imu_data.linear_acceleration.y << "," 
         << imu_data.linear_acceleration.z << "," << imu_data.angular_velocity.x << "," << imu_data.angular_velocity.y << "," << imu_data.angular_velocity.z << "\n";
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
