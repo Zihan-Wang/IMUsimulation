@@ -25,12 +25,18 @@ output_path = os.path.join(odometry_path, "poses/" + sequence + "_converted.txt"
 
 
 # Transform the coordinate, such that the z axis point upwards. 
+# Note: This actually just does a axis rotaton, but the right way to do this is to 
+# mutiply the coordinate with a T_imu_cam0 instead. However, the resulting estimated
+# trajectory is very noisy, and I haven't had the time to figure out way.
 P = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]])
-
 poses_w_imu = [P.dot(T.dot(raw_data.calib.T_cam0_imu)) for T in odometry_data.poses]
-# T_cam0_imu = raw_data.calib.T_cam0_imu
-# T_imu_cam0 = inv(T_cam0_imu)
-# poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
+
+"""
+Believe this is the right way to do it:
+T_cam0_imu = raw_data.calib.T_cam0_imu
+T_imu_cam0 = inv(T_cam0_imu)
+poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
+"""
 
 
 # dataset.calib:      Calibration data are accessible as a named tuple
