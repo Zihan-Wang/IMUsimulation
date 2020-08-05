@@ -32,7 +32,7 @@
     <arg name="accelerometer_random_walk"      default="3.0000e-3" />
 
     <!-- if we should perturb the initial state values (i.e. calibration) -->
-    <arg name="sim_do_perturbation" default="true" />
+    <arg name="sim_do_perturbation" default="false" />
     <arg name="sim_do_calibration"  default="true" />
 
     <!-- saving trajectory paths -->
@@ -131,9 +131,10 @@
         <param name="accelerometer_random_walk"    type="double"   value="$(arg accelerometer_random_walk)" />
 
         <!-- camera intrinsics -->
-        <rosparam param="cam0_wh">[752,480]</rosparam>
-        <rosparam param="cam1_wh">[752,480]</rosparam>
-        <rosparam param="cam2_wh">[752,480]</rosparam>
+        <rosparam param="cam0_wh">[1226,370]</rosparam>
+        <rosparam param="cam1_wh">[1226,370]</rosparam>
+        <rosparam param="cam2_wh">[1226,370]</rosparam>
+        <rosparam param="cam3_wh">[1226,370]</rosparam>
         <param name="cam0_is_fisheye" type="bool" value="false" />
         <param name="cam1_is_fisheye" type="bool" value="false" />
         <param name="cam2_is_fisheye" type="bool" value="false" />
@@ -148,21 +149,39 @@
         <rosparam param="cam3_d">[-0.28368365,0.07451284,-0.00010473,-3.55590700e-05]</rosparam>
 
 
-        <!-- camera extrinsics -->
+        <!-- camera extrinsics for gray cameras -->
         <rosparam param="T_C0toI">
             [
-             0,-1, 0, -0.05,
-             1, 0, 0,  0.00,
-             0, 0, 1,  0.00,
-             0, 0, 0,  1.00
+            -0.00108863, -0.00851207,  0.99996318, 1.14397089,
+            -0.9999764,  -0.00677767, -0.00114634, -0.24640917,
+            0.00678718,  -0.99994073, -0.00850449, 0.72609598,
+            0.0, 0.0, 0.0, 1.0
             ]
         </rosparam>
         <rosparam param="T_C1toI">
             [
-             0,-1, 0,  0.05,
-             1, 0, 0,  0.00,
-             0, 0, 1,  0.00,
-             0, 0, 0,  1.00
+            -0.00108863, -0.00851207,  0.99996318, 1.14338531,
+            -0.9999764,  -0.00677767, -0.00114634, -0.78430096,
+            0.00678718,  -0.99994073, -0.00850449, 0.72974684,
+            0.0, 0.0, 0.0, 1.0
+            ]
+        </rosparam>
+
+        <rosparam param="T_C2toI">
+            [
+            -0.00108863, -0.00851207,  0.99996318, 1.14397089,
+            -0.9999764,  -0.00677767, -0.00114634,-0.24640917,
+            0.00678718,  -0.99994073, -0.00850449, 0.72609598,
+            0.0, 0.0, 0.0, 1.0
+            ]
+        </rosparam>
+
+        <rosparam param="T_C3toI">
+            [
+            -0.00108863, -0.00851207,  0.99996318,  1.14338531,
+            -0.9999764,  -0.00677767, -0.00114634, -0.78430096,
+            0.00678718,  -0.99994073, -0.00850449,  0.72974684,
+            0.0,          0.0          0.0          1.0
             ]
         </rosparam>
 

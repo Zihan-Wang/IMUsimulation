@@ -1,1 +1,4 @@
 ov_data/sim/featsmeas
+ov_msckf/src/kittipy/*.pyc
+*.png
+*.csv
