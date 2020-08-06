@@ -130,7 +130,6 @@ Simulator::Simulator(VioManagerOptions& params_) {
         gen_meas_cams.at(i).seed(params.sim_seed_measurements);
     }
 
-
     //===============================================================
     //===============================================================
 
@@ -164,7 +163,7 @@ Simulator::Simulator(VioManagerOptions& params_) {
             // Our camera extrinsics transform (orientation)
             Eigen::Vector3d w_vec;
             w_vec << 0.001*w(gen_state_perturb), 0.001*w(gen_state_perturb), 0.001*w(gen_state_perturb);
-           params_.camera_extrinsics.at(i).block(0,0,4,1) =
+            params_.camera_extrinsics.at(i).block(0,0,4,1) =
                    rot_2_quat(exp_so3(w_vec)*quat_2_Rot(params_.camera_extrinsics.at(i).block(0,0,4,1)));
 
         }
@@ -176,7 +175,7 @@ Simulator::Simulator(VioManagerOptions& params_) {
 
 
     // We will create synthetic camera frames and ensure that each has enough features
-    //double dt = 0.25/freq_cam;
+    // double dt = 0.25/params.sim_freq_cam;
     double dt = 0.25;
     size_t mapsize = featmap.size();
     printf("[SIM]: Generating map features at %d rate\n",(int)(1.0/dt));
@@ -332,10 +331,7 @@ bool Simulator::get_next_imu(double &time_imu, Eigen::Vector3d &wm, Eigen::Vecto
 
     // Return success
     return true;
-
 }
-
-
 
 bool Simulator::get_next_cam(double &time_cam, std::vector<int> &camids, std::vector<std::vector<std::pair<size_t,Eigen::VectorXf>>> &feats) {
 
@@ -391,13 +387,11 @@ bool Simulator::get_next_cam(double &time_cam, std::vector<int> &camids, std::ve
         // Push back for this camera
         feats.push_back(uvs);
         camids.push_back(i);
-
     }
 
 
     // Return success
     return true;
-
 }
 
 
@@ -481,6 +475,7 @@ std::vector<std::pair<size_t,Eigen::VectorXf>> Simulator::project_pointcloud(con
     // Our projected uv true measurements
     std::vector<std::pair<size_t,Eigen::VectorXf>> uvs;
 
+    int skipped_counter = 0;
     // Loop through our map
     for(const auto &feat : feats) {
 
@@ -489,8 +484,10 @@ std::vector<std::pair<size_t,Eigen::VectorXf>> Simulator::project_pointcloud(con
         Eigen::Vector3d p_FinC = R_ItoC*p_FinI+p_IinC;
 
         // Skip cloud if too far away
-        if(p_FinC(2) > 15 || p_FinC(2) < 0.5)
-            continue;
+        if(p_FinC(2) > 15 || p_FinC(2) < 0.5) {
+             skipped_counter++;
+             continue;
+        }
 
         // Project to normalized coordinates
         Eigen::Vector2f uv_norm;
@@ -539,6 +536,8 @@ std::vector<std::pair<size_t,Eigen::VectorXf>> Simulator::project_pointcloud(con
         uvs.push_back({feat.first, uv_dist});
 
     }
+
+    printf("Number of skipped point cloud: %d \n", skipped_counter);
 
     // Return our projections
     return uvs;
