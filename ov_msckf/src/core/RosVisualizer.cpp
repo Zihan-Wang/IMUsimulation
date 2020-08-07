@@ -274,12 +274,10 @@ void RosVisualizer::visualize_odometry(double timestamp) {
 
 }
 
-
-
 void RosVisualizer::visualize_final() {
 
     // print final number of seen feature;
-    printf("Total number of features seen in trajectory: %d; \n", feats_hist.size());
+    printf("Total number of features seen in trajectory: %lu; \n", feats_hist.size());
 
     // Final time offset value
     if(_app->get_state()->_options.do_calib_camera_timeoffset) {
@@ -419,7 +417,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
 
     // Create our path (imu)
     nav_msgs::Path arrIMU;
-    arrIMU.header.stamp = ros::Time::now();
+    arrIMU.header.stamp = imu_data.header.stamp;
     arrIMU.header.seq = poses_seq_imu;
     arrIMU.header.frame_id = "global";
     arrIMU.poses = poses_imu;
@@ -512,8 +510,7 @@ void RosVisualizer::publish_featsgt() {
 
 
     // Publish 3D features and visualize them
-
-    /*
+    
     // Declare message and sizes
     sensor_msgs::PointCloud2 cloud;
     cloud.header.frame_id = "global";
@@ -541,7 +538,6 @@ void RosVisualizer::publish_featsgt() {
     }
 
     pub_points_featsgt.publish(cloud);
-    */
 }
 
 void RosVisualizer::publish_feats_inC(std::vector<std::pair<size_t,Eigen::VectorXf>> feats) {
@@ -955,6 +951,7 @@ void RosVisualizer::publish_groundtruth() {
 
     // Check that we have the timestamp in our GT file [time(sec),q_GtoI,p_IinG,v_IinG,b_gyro,b_accel]
     if(_sim == nullptr && (gt_states.empty() || !DatasetReader::get_gt_state(timestamp_inI, state_gt, gt_states))) {
+        // printf("Unable to publish groundtruth. Number of groundtruth states: %lu, timestamp: %lf", gt_states.size(), timestamp_inI);
         return;
     }
 

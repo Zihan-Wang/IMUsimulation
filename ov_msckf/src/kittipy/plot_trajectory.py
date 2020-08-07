@@ -27,10 +27,10 @@ if __name__=="__main__":
     print(est_traj.shape,)
 
     gt_timestamp = gt_traj[:, 0]
-    est_timestamp = est_traj[:415, 0]
+    est_timestamp = est_traj[:, 0]
 
     gt_xyz = gt_traj[:, 1:4]
-    est_xyz = est_traj[0:415, 1:4]
+    est_xyz = est_traj[:, 1:4]
 
     fig = plt.figure()
     ax = fig.add_subplot(111)

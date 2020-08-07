@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /Color Left1
         - /Color Right1
+        - /IMU Path1
         - /Ground Truth1
         - /Odometry1
       Splitter Ratio: 0.5
@@ -61,11 +62,7 @@ Visualization Manager:
       Frame Timeout: 999
       Frames:
         All Enabled: true
-        base_link:
-          Value: true
         cam0:
-          Value: true
-        cam1:
           Value: true
         camera_color_left:
           Value: true
@@ -75,13 +72,17 @@ Visualization Manager:
           Value: true
         camera_gray_right:
           Value: true
+        camera_init:
+          Value: true
         global:
           Value: true
         imu:
           Value: true
-        imu_link:
-          Value: true
         map:
+          Value: true
+        truth:
+          Value: true
+        velo_init:
           Value: true
         velo_link:
           Value: true
@@ -98,8 +99,8 @@ Visualization Manager:
             imu:
               cam0:
                 {}
-              cam1:
-                {}
+            truth:
+              {}
       Update Interval: 0
       Value: true
     - Class: rviz/Image
@@ -130,7 +131,7 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz/Path
       Color: 0; 255; 0
-      Enabled: true
+      Enabled: false
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -148,7 +149,7 @@ Visualization Manager:
       Shaft Length: 0.10000000149011612
       Topic: /ov_msckf/pathimu
       Unreliable: false
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -169,7 +170,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: ""
+      Topic: /ov_msckf/pathgt
       Unreliable: false
       Value: true
     - Angle Tolerance: 0.10000000149011612
@@ -189,7 +190,7 @@ Visualization Manager:
           Scale: 1
           Value: true
         Value: true
-      Enabled: true
+      Enabled: false
       Keep: 100
       Name: Odometry
       Position Tolerance: 0.10000000149011612
@@ -205,7 +206,7 @@ Visualization Manager:
         Value: Arrow
       Topic: /ov_msckf/odomimu
       Unreliable: false
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -234,7 +235,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10293.076171875
+      Distance: 1341.0819091796875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -249,10 +250,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.13960175216197968
+      Pitch: 1.1603974103927612
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.6803982257843018
+      Yaw: 1.6053974628448486
     Saved: ~
 Window Geometry:
   Color Left:

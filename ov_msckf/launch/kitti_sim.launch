@@ -32,8 +32,8 @@
     <arg name="accelerometer_random_walk"      default="3.0000e-3" />
 
     <!-- if we should perturb the initial state values (i.e. calibration) -->
-    <arg name="sim_do_perturbation" default="true" />
-    <arg name="sim_do_calibration"  default="true" />
+    <arg name="sim_do_perturbation" default="false" />
+    <arg name="sim_do_calibration"  default="false" />
 
     <!-- saving trajectory paths -->
     <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
@@ -167,6 +167,7 @@
             ]
         </rosparam>
 
+        <!-- camera extrinsics for color cameras -->
         <rosparam param="T_C2toI">
             [
             -0.00108863, -0.00851207,  0.99996318, 1.14397089,

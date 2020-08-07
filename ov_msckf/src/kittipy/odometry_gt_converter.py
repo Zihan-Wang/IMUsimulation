@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from numpy.linalg import inv
-from transformation_helpers import euler_to_quat
+from transformation_helpers import matrix_to_quaternion
 import numpy as np
 import os
 import pandas as pd
@@ -66,13 +66,19 @@ timestamps = np.array(map(lambda x: x.total_seconds(), odometry_data.timestamps)
 print("\nExample of extracted rotation: " + str(R_w_imu[0]))
 print("\nExample of extracted translation: " + str(p_w_imu[0]))
 
-q_w_imu = np.array(map(euler_to_quat, R_w_imu))
+q_w_imu = np.array(map(matrix_to_quaternion, R_w_imu)) # qx qy qz qw
 p_w_imu = np.array(p_w_imu)
 
-qs, qv = q_w_imu[:, 0].reshape(-1, 1), q_w_imu[:, 1:] 
+# qs, qv = q_w_imu[:, 0].reshape(-1, 1), q_w_imu[:, 1:] 
+
+print(q_w_imu.shape,)
+
 
 # Construct dataset and output
-dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, qv, qs))) # (timestamp(s) tx ty tz qx qy qz qw)
+
+# dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, qv, qs))) # (timestamp(s) tx ty tz qx qy qz qw)
+
+dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, q_w_imu))) # (timestamp(s) tx ty tz qx qy qz qw)
 dataset.to_csv(output_path, sep=' ', header=False, index=False)
  
 

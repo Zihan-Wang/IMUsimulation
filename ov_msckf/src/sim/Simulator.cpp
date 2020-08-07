@@ -98,7 +98,6 @@ Simulator::Simulator(VioManagerOptions& params_) {
             timestamp_last_imu += 1.0/params.sim_freq_cam;
             timestamp_last_cam += 1.0/params.sim_freq_cam;
         }
-
     }
     printf("[SIM]: moved %.3f seconds into the dataset where it starts moving\n",timestamp-spline.get_start_time());
 
@@ -195,6 +194,8 @@ Simulator::Simulator(VioManagerOptions& params_) {
             Eigen::Matrix3d R_GtoI;
             Eigen::Vector3d p_IinG;
             bool success_pose = spline.get_pose(time_synth, R_GtoI, p_IinG);
+            // Eigen::Vector4d q_GtoI = rot_2_quat(R_GtoI);
+            // printf("q_GtoI = %.3f,%.3f,%.3f,%.3f | p_IinG = %.3f,%.3f,%.3f", q_GtoI(0), q_GtoI(1), q_GtoI(2), q_GtoI(3), p_IinG(0), p_IinG(1), p_IinG(2));
 
             // We have finished generating features
             if(!success_pose)
@@ -202,10 +203,16 @@ Simulator::Simulator(VioManagerOptions& params_) {
 
             // Get the uv features for this frame
             std::vector<std::pair<size_t,Eigen::VectorXf>> uvs = project_pointcloud(R_GtoI, p_IinG, i, featmap);
+
+            // printf("[SIM]: Projected %d map features in at timestamp: %lf \n", (int)uvs.size(),time_synth);
+
             // If we do not have enough, generate more
             if((int)uvs.size() < params.num_pts) {
                 generate_points(R_GtoI, p_IinG, i, featmap, params.num_pts-(int)uvs.size());
             }
+            // printf("[SIM]: Featmap size %d at timestamp: %lf \n", (int)featmap.size(),time_synth);
+            // std::vector<std::pair<size_t,Eigen::VectorXf>> uvs_new = project_pointcloud(R_GtoI, p_IinG, i, featmap);
+            // printf("[SIM]: Projected %d map features after adding features at timestamp: %lf \n\n", (int)uvs_new.size(),time_synth);
 
             // Move forward in time
             time_synth += dt;
@@ -363,7 +370,7 @@ bool Simulator::get_next_cam(double &time_cam, std::vector<int> &camids, std::ve
 
         // If we do not have enough, generate more
         if((int)uvs.size() < params.num_pts) {
-            printf(YELLOW "[SIM]: cam %d was unable to generate enough features (%d < %d projections)\n" RESET,(int)i,(int)uvs.size(),params.num_pts);
+            printf(YELLOW "[SIM]: cam %d was unable to generate enough features (%d < %d projections). Timestamp: %lf \n" RESET,(int)i,(int)uvs.size(),params.num_pts, time_cam);
         }
 
         // If greater than only select the first set
@@ -384,14 +391,18 @@ bool Simulator::get_next_cam(double &time_cam, std::vector<int> &camids, std::ve
             uvs.at(j).second(1) += params.msckf_options.sigma_pix*w(gen_meas_cams.at(i));
         }
 
+        // Edge case: if no feature is seen, continue onto the next camera
+        if ((int)uvs.size() == 0) {
+            continue;
+        }
         // Push back for this camera
         feats.push_back(uvs);
         camids.push_back(i);
     }
 
 
-    // Return success
-    return true;
+    // Return if some camera contains some features
+    return feats.size() != 0;
 }
 
 
@@ -627,6 +638,4 @@ void Simulator::generate_points(const Eigen::Matrix3d &R_GtoI, const Eigen::Vect
         id_map++;
 
     }
-
-
 }

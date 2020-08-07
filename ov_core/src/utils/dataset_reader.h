@@ -91,7 +91,7 @@ namespace ov_core {
                 std::string field;
                 Eigen::Matrix<double, 17, 1> temp;
                 // Loop through this line
-                while (getline(s, field, ',')) {
+                while (getline(s, field, ' ')) {
                     // Ensure we are in the range
                     if (i > 16) {
                         printf(RED "ERROR: Invalid groudtruth line, too long!\n" RESET);
@@ -103,7 +103,8 @@ namespace ov_core {
                     i++;
                 }
                 // Append to our groundtruth map
-                gt_states.insert({1e-9 * temp(0, 0), temp});
+                gt_states.insert({temp(0, 0), temp});
+                // std::cout << temp(0,0) << ": " << temp << "\n";
             }
             file.close();
         }
@@ -127,6 +128,7 @@ namespace ov_core {
             // Loop through gt states and find the closest time stamp
             double closest_time = INFINITY;
             auto it0 = gt_states.begin();
+
             while(it0 != gt_states.end()) {
                 if(std::abs(it0->first-timestep) < std::abs(closest_time-timestep)) {
                     closest_time = it0->first;
@@ -135,11 +137,14 @@ namespace ov_core {
             }
 
             // If close to this timestamp, then use it
-            if(std::abs(closest_time-timestep) < 0.005) {
+            double delta = 0.1;
+            // double delta = 0.005 original setting
+            if(std::abs(closest_time-timestep) < delta) {
                 //printf("init DT = %.4f\n", std::abs(closest_time-timestep));
                 //printf("timestamp = %.15f\n", closest_time);
                 timestep = closest_time;
             }
+
 
             // Check that we have the timestamp in our GT file
             if(gt_states.find(timestep) == gt_states.end()) {

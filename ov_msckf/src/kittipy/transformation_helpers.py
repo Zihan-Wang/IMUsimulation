@@ -1,6 +1,7 @@
 """
 Helper functions for converting euler angles into quarternions.
 """
+from tf.transformations import quaternion_from_matrix
 import math
 import numpy as np
 
@@ -27,21 +28,40 @@ def vee_operator(u_hat):
   u = np.array([u_1, u_2,u_3])
   return u
 
+def compute_angle(R):
+    """
+    Compute the rotation angle from a 4x4 homogeneous matrix.
+    """
+    # an invitation to 3-d vision, p 27
+    return numpy.arccos( min(1,max(-1, (numpy.trace(R) - 1)/2)))
+
+
+def matrix_to_quaternion(R):
+    """
+    :param R: a 3x3 rotation matrix, in euler angles
+    :output q: a (4,) quaternion representation of the rotation
+    """
+    r = np.eye(4)
+    r[0:3, 0:3] = R
+    q = quaternion_from_matrix(r)
+    return q #[qx, qy, qz, qw]
+
+
 def euler_to_quat(R):
-  """
-  :param R: a 3x3 rotation matrix, in euler angles
-  :output q: a (4,) quaternion representation of the rotation
-  """
-  eps = 0.0001
-  assert (np.trace(R) - 1) / 2.0 < 1 + eps and (np.trace(R) - 1) / 2.0 > -1 - eps
-  theta_norm = math.acos(np.clip((np.trace(R) - 1) / 2.0, -1, 1))
-  if theta_norm == 0:
-    # unity quaternion, no rotation
-    return np.array([1, 0, 0, 0])
-  else:
-    theta_hat_unit = (R - R.T) / (2 * math.sin(theta_norm))
-    si = vee_operator(theta_hat_unit)
-    return np.array([math.cos(theta_norm / 2.0)] + list(math.sin(theta_norm / 2.0) * si))
+    """
+    :param R: a 3x3 rotation matrix, in euler angles
+    :output q: a (4,) quaternion representation of the rotation
+    """
+    eps = 0.0001
+    assert (np.trace(R) - 1) / 2.0 < 1 + eps and (np.trace(R) - 1) / 2.0 > -1 - eps
+    theta_norm = math.acos(np.clip((np.trace(R) - 1) / 2.0, -1, 1))
+    if theta_norm == 0:
+      # unity quaternion, no rotation
+      return np.array([1, 0, 0, 0])
+    else:
+      theta_hat_unit = (R - R.T) / (2 * math.sin(theta_norm))
+      si = vee_operator(theta_hat_unit)
+      return np.array([math.cos(theta_norm / 2.0)] + list(math.sin(theta_norm / 2.0) * si))
 
 def test_euler_to_quat():
   R = np.array([[1.000000e+00, 1.197625e-11, 1.704638e-10],
