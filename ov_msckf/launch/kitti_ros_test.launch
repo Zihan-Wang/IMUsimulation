@@ -34,7 +34,7 @@
         <param name="topic_camera1"  type="string" value="/kitti/camera_color_right/image" />
 
         <!-- groundtruth file -->
-        <param name="path_gt"  type="string" value="$(arg path_gt)" />
+        <!-- param name="path_gt"  type="string" value="$(arg path_gt)" -->
 
         <!-- world/filter parameters -->
         <param name="use_fej"                type="bool"   value="true" />
@@ -140,7 +140,7 @@
     <node pkg="tf" type="static_transform_publisher" name="global_tf_broadcaster" args="0 0 0 0 0 0 1 map global 10" />
     
     <!-- play the dataset -->
-    <node pkg="rosbag" type="play" name="rosbag" args="-d 10 -s $(arg bag_start) -u $(arg bag_durr) $(arg bag)" required="true"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="-d 1 -s $(arg bag_start) -u $(arg bag_durr) $(arg bag)" required="true"/>
 
     <!-- record the trajectory if enabled -->
     <group if="$(arg dosave)">
