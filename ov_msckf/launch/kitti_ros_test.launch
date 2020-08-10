@@ -2,7 +2,7 @@
 
     <!-- mono or stereo and what ros bag to play -->
     <arg name="max_cameras" default="1" />
-    <arg name="use_stereo"  default="true" />
+    <arg name="use_stereo"  default="false" />
     <arg name="bag_start"   default="0" />
     <arg name="bag_durr"    default="999999" />
     <arg name="msckf_update" default="false" /> <!-- TODO: update parsing code to use this as an option -->
@@ -44,7 +44,7 @@
         <param name="calib_cam_extrinsics"   type="bool"   value="false" />
         <param name="calib_cam_intrinsics"   type="bool"   value="false" />
         <param name="calib_cam_timeoffset"   type="bool"   value="false" />
-        <param name="calib_camimu_dt"        type="double" value="0" />
+        <param name="calib_camimu_dt"        type="double" value="0.0" />
         <param name="max_clones"             type="int"    value="8" />
         <param name="max_slam"               type="int"    value="150" />
         <param name="max_slam_in_update"     type="int"    value="40" />
@@ -90,10 +90,6 @@
         <param name="up_slam_chi2_multipler"       type="double"   value="1" />
         <param name="up_aruco_sigma_px"            type="double"   value="1" />
         <param name="up_aruco_chi2_multipler"      type="double"   value="1" />
-<!--        <param name="gyroscope_noise_density"      type="double"   value="0.05" />-->
-<!--        <param name="gyroscope_random_walk"        type="double"   value="4.0e-05" />-->
-<!--        <param name="accelerometer_noise_density"  type="double"   value="0.10" />-->
-<!--        <param name="accelerometer_random_walk"    type="double"   value="0.002" />-->
         <param name="gyroscope_noise_density"      type="double"   value="1.6968e-04" />
         <param name="gyroscope_random_walk"        type="double"   value="1.9393e-05" />
         <param name="accelerometer_noise_density"  type="double"   value="2.0000e-3" />
@@ -144,7 +140,7 @@
     <node pkg="tf" type="static_transform_publisher" name="global_tf_broadcaster" args="0 0 0 0 0 0 1 map global 10" />
     
     <!-- play the dataset -->
-    <node pkg="rosbag" type="play" name="rosbag" args="-d 1 -s $(arg bag_start) -u $(arg bag_durr) $(arg bag)" required="true"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="-d 10 -s $(arg bag_start) -u $(arg bag_durr) $(arg bag)" required="true"/>
 
     <!-- record the trajectory if enabled -->
     <group if="$(arg dosave)">
