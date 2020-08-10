@@ -14,7 +14,7 @@
     <arg name="max_cameras" default="1" />
 
     <arg name="freq_cam"    default="10" />
-    <arg name="freq_imu"    default="250" />
+    <arg name="freq_imu"    default="330" />
 
     <arg name="basedir"     default="/home/jamesdi1993/datasets/Kitti/dataset" />
     <arg name="seq"         default="06" /> 
@@ -182,7 +182,7 @@
             -0.00108863, -0.00851207,  0.99996318,  1.14338531,
             -0.9999764,  -0.00677767, -0.00114634, -0.78430096,
             0.00678718,  -0.99994073, -0.00850449,  0.72974684,
-            0.0,          0.0          0.0          1.0
+            0.0,          0.0,         0.0,         1.0
             ]
         </rosparam>
 
