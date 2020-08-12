@@ -126,9 +126,9 @@ int main(int argc, char** argv)
         if(hasimu) {
             sys->feed_measurement_imu(time_imu, wm, am);
 #ifdef ROS_AVAILABLE
-            viz->visualize_odometry(time_imu);
+            viz->visualize_odometry(time_imu, wm, am);
 #endif
-        }
+	}
 
         // CAM: get the next simulated camera uv measurements if we have them
         double time_cam;
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
             if(buffer_timecam != -1) {
                 sys->feed_measurement_simulation(buffer_timecam, buffer_camids, buffer_feats);
 #ifdef ROS_AVAILABLE
-                viz->visualize_imu(wm, am);
+                viz->visualize_imu();
                 std::string path_feats;
                 path_feats = viz->path_featdir + "/" + std::to_string(seq_featList) + ".csv";
                 if (boost::filesystem::exists(path_feats))

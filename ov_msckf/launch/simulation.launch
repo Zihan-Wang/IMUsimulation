@@ -16,7 +16,7 @@
     <arg name="freq_cam"    default="10" />
     <arg name="freq_imu"    default="400" />
 
-    <arg name="dataset"    default="06odome.txt.txt" /> <!-- euroc_V1_01_easy, udel_gore, tum_corridor1_512_16_okvis, udel_arl -->
+    <arg name="dataset"    default="06odome.txt" /> <!-- euroc_V1_01_easy, udel_gore, tum_corridor1_512_16_okvis, udel_arl -->
 
     <!-- sensor noise values / update -->
     <arg name="up_msckf_sigma_px"              default="1" />

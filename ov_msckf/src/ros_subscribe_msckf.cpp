@@ -136,7 +136,7 @@ void callback_inertial(const sensor_msgs::Imu::ConstPtr& msg) {
 
     // send it to our VIO system
     sys->feed_measurement_imu(timem, wm, am);
-    viz->visualize_odometry(timem);
+    viz->visualize_odometry(timem, wm, am);
 
 }
 

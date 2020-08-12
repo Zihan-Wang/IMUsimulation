@@ -179,7 +179,7 @@ void RosVisualizer::visualize() {
 
 }
 
-void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
+void RosVisualizer::visualize_imu(){
     if(!_app->initialized())
         return;
 
@@ -188,9 +188,6 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
         rT1 =  boost::posix_time::microsec_clock::local_time();
         start_time_set = true;
     }
-
-    // publish state
-    publish_imustate(wm, am);
 
     // publish features in IMU frame;
     publish_features();
@@ -204,8 +201,10 @@ void RosVisualizer::visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am){
 }
 
 
-void RosVisualizer::visualize_odometry(double timestamp) {
+void RosVisualizer::visualize_odometry(double timestamp, Eigen::Vector3d wm, Eigen::Vector3d am) {
 
+    publish_imustate(timestamp, wm, am);
+    
     // Check if we have subscribers
     if(pub_odomimu.getNumSubscribers()==0)
         return;
@@ -344,7 +343,7 @@ void RosVisualizer::visualize_final() {
 /*
  * Publish the state of IMU as well as IMU measurements using the simulated wm, am;
  */ 
-void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
+void RosVisualizer::publish_imustate(double timestamp, Eigen::Vector3d wm, Eigen::Vector3d am) {
 
     // Get the current state
     State* state = _app->get_state();
@@ -373,7 +372,7 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     
     // Create measurment of IMU
     sensor_msgs::Imu imu_data;
-    imu_data.header.stamp = ros::Time(timestamp_inI);
+    imu_data.header.stamp = ros::Time(timestamp);
     imu_data.header.seq = poses_seq_imu;
     imu_data.header.frame_id = "base_link";
     imu_data.orientation.x = state->_imu->quat()(0);

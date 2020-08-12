@@ -80,14 +80,14 @@ namespace ov_msckf {
          * This will take the current state estimate and get the propagated pose to the desired time.
          * This can be used to get pose estimates on systems which require high frequency pose estimates.
          */
-        void visualize_odometry(double timestamp);
+        void visualize_odometry(double timestamp, Eigen::Vector3d wm, Eigen::Vector3d am);
 
         /**
          * @brief After the run has ended, print results
          */
         void visualize_final();
 
-        void visualize_imu(Eigen::Vector3d wm, Eigen::Vector3d am);
+        void visualize_imu();
         
         // Publish the 3D positions of the features in current camera;
         void publish_feats_inC(std::vector<std::pair<size_t,Eigen::VectorXf>> feats);
@@ -103,7 +103,7 @@ namespace ov_msckf {
 
         /// Publish the current state
         void publish_state();
-        void publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am);
+        void publish_imustate(double timestamp, Eigen::Vector3d wm, Eigen::Vector3d am);
         /// Publish the active tracking image
         void publish_images();
 

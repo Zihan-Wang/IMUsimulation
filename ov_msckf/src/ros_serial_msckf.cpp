@@ -159,7 +159,7 @@ int main(int argc, char** argv)
             am << (*s2).linear_acceleration.x, (*s2).linear_acceleration.y, (*s2).linear_acceleration.z;
             // send it to our VIO system
             sys->feed_measurement_imu(timem, wm, am);
-            viz->visualize_odometry(timem);
+            viz->visualize_odometry(timem, wm, am);
         }
 
         // Handle LEFT camera
