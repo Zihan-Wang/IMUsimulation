@@ -66,6 +66,9 @@ namespace ov_msckf {
         ///  Variance threshold on our acceleration to be classified as moving
         double init_imu_thresh = 1.0;
 
+        /// Initial Velocity in the IMU frame.
+        Eigen::Vector3d init_vel = {0.0, 0.0, 0.0};
+
         /// If we should record the timing performance to file
         bool record_timing_information = false;
 
@@ -90,6 +93,9 @@ namespace ov_msckf {
 
         /// IMU noise (gyroscope and accelerometer)
         Propagator::NoiseManager imu_noises;
+
+        /// IMU noise in SIM (gyroscope and accelerometer)
+        Propagator::NoiseManager sim_imu_noises;
 
         /// Update options for MSCKF features (pixel noise and chi2 multiplier)
         UpdaterOptions msckf_options;

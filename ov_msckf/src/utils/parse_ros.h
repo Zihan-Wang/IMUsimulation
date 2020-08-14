@@ -98,6 +98,13 @@ namespace ov_msckf {
         nh.param<double>("init_window_time", params.init_window_time, params.init_window_time);
         nh.param<double>("init_imu_thresh", params.init_imu_thresh, params.init_imu_thresh);
 
+
+        // Initial Velocity
+        std::vector<double> init_vel = {params.init_vel(0), params.init_vel(1), params.init_vel(2)};
+        nh.param<std::vector<double>>("init_vel", init_vel, init_vel);
+        assert(init_vel.size()==3);
+        params.init_vel << init_vel.at(0), init_vel.at(1), init_vel.at(2);
+
         // Recording of timing information to file
         nh.param<bool>("record_timing_information", params.record_timing_information, params.record_timing_information);
         nh.param<std::string>("record_timing_filepath", params.record_timing_filepath, params.record_timing_filepath);
@@ -179,7 +186,11 @@ namespace ov_msckf {
         nh.param<int>("sim_seed_preturb", params.sim_seed_preturb, params.sim_seed_preturb);
         nh.param<int>("sim_seed_measurements", params.sim_seed_measurements, params.sim_seed_measurements);
 
-
+        // Our noise values for simulation parameters sensor
+        nh.param<double>("sim_gyroscope_noise_density", params.sim_imu_noises.sigma_w, params.sim_imu_noises.sigma_w);
+        nh.param<double>("sim_accelerometer_noise_density", params.sim_imu_noises.sigma_a, params.sim_imu_noises.sigma_a);
+        nh.param<double>("sim_gyroscope_random_walk", params.sim_imu_noises.sigma_wb, params.sim_imu_noises.sigma_wb);
+        nh.param<double>("sim_accelerometer_random_walk", params.sim_imu_noises.sigma_ab, params.sim_imu_noises.sigma_ab);
 
         //====================================================================================
         //====================================================================================
