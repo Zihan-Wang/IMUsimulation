@@ -102,6 +102,15 @@ int main(int argc, char** argv)
     //===================================================================================
     //===================================================================================
     //===================================================================================
+    std::string path_imu_meas;
+    std::ofstream of_imu_meas;
+
+    nh.param<std::string>("path_imu_meas", path_imu_meas, "imumeas.csv");
+    if (boost::filesystem::exists(path_imu_meas))
+        boost::filesystem::remove(path_imu_meas);
+
+    // open stream for writing out imu data
+    of_imu_meas.open(path_imu_meas.c_str());
 
     // Buffer our camera image
     double buffer_timecam = -1;
@@ -117,7 +126,7 @@ int main(int argc, char** argv)
 #endif
 
         // ROS_INFO("Sleeping for 1ms for visualization");
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // IMU: get the next simulated IMU measurement if we have it
         double time_imu;
@@ -125,6 +134,11 @@ int main(int argc, char** argv)
         bool hasimu = sim->get_next_imu(time_imu, wm, am);
         if(hasimu) {
             sys->feed_measurement_imu(time_imu, wm, am);
+
+            // printf("Writing IMU data...");
+            of_imu_meas << time_imu << "," << am(0) << "," << am(1) << ","
+                << am(2) << "," << wm(0) << "," << wm(1) << "," << wm(2) << "\n";
+
 #ifdef ROS_AVAILABLE
             viz->visualize_odometry(time_imu);
 #endif
@@ -194,6 +208,8 @@ int main(int argc, char** argv)
     //===================================================================================
     //===================================================================================
 
+    // close stream for writing out imu measurement
+    of_imu_meas.close();
 
     // Final visualization
 #ifdef ROS_AVAILABLE
@@ -205,6 +221,7 @@ int main(int argc, char** argv)
     // Finally delete our system
     delete sim;
     delete sys;
+
 
     // Done!
     return EXIT_SUCCESS;
