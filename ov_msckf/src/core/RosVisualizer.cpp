@@ -59,26 +59,24 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     ROS_INFO("Publishing: %s", pub_pathgt.getTopic().c_str());
     
     // 3D points publishing
-    /*
+    
     pub_points_slam = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_slam", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
-    pub_points_aruco = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_aruco", 2);
-    ROS_INFO("Publishing: %s", pub_points_aruco.getTopic().c_str());
+    // pub_points_aruco = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_aruco", 2);
+    // ROS_INFO("Publishing: %s", pub_points_aruco.getTopic().c_str());
     
     pub_points_msckf = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_msckf", 2);
     ROS_INFO("Publishing: %s", pub_points_msckf.getTopic().c_str());
-    pub_points_sim = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_sim", 2);
-    ROS_INFO("Publishing: %s", pub_points_sim.getTopic().c_str());*/
-
-
-    /*
+    // pub_points_sim = nh.advertise<sensor_msgs::PointCloud2>("/ov_msckf/points_sim", 2);
+    // ROS_INFO("Publishing: %s", pub_points_sim.getTopic().c_str());
+    
     // Our tracking image
     pub_tracks = nh.advertise<sensor_msgs::Image>("/ov_msckf/trackhist", 2);
     ROS_INFO("Publishing: %s", pub_tracks.getTopic().c_str());
 
     // Groundtruth publishers
     pub_posegt = nh.advertise<geometry_msgs::PoseStamped>("/ov_msckf/posegt", 2);
-    ROS_INFO("Publishing: %s", pub_posegt.getTopic().c_str()); */
+    ROS_INFO("Publishing: %s", pub_posegt.getTopic().c_str()); 
 
     // option to enable publishing of global to IMU transformation
     nh.param<bool>("publish_global_to_imu_tf", publish_global2imu_tf, true);
@@ -93,10 +91,9 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
 
     // Load if we should save the total state to file
     nh.param<bool>("save_total_state", save_total_state, false);
-    std::string path_featsgt, path_imu_pose, path_imu_meas;
+    std::string path_featsgt, path_imu_pose;
     nh.param<std::string>("path_featsgt", path_featsgt, "feats.csv");
     nh.param<std::string>("path_imu_pose", path_imu_pose, "imupose.csv");
-    nh.param<std::string>("path_imu_meas", path_imu_meas, "imumeas.csv");
     nh.param<std::string>("path_featdir", path_featdir, "featsmeas");
     if (boost::filesystem::exists(path_featsgt))
         boost::filesystem::remove(path_featsgt);
@@ -105,11 +102,6 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
     if (boost::filesystem::exists(path_imu_pose))
         boost::filesystem::remove(path_imu_pose);
     of_imu_pose.open(path_imu_pose.c_str());
-
-    if (boost::filesystem::exists(path_imu_meas))
-        boost::filesystem::remove(path_imu_meas);
-
-    of_imu_meas.open(path_imu_meas.c_str());
 
     // If the file is not open, then open the file
     if(save_total_state) {
@@ -330,7 +322,6 @@ void RosVisualizer::visualize_final() {
     // close all stream;
     of_feats_gt.close();
     of_imu_pose.close();
-    of_imu_meas.close();
 
     if (save_total_state) {
         of_state_est.close();
@@ -389,9 +380,6 @@ void RosVisualizer::publish_imustate(Eigen::Vector3d wm, Eigen::Vector3d am) {
     imu_data.angular_velocity.z = wm(2);
     imu_data.angular_velocity_covariance[0] = -1;
 
-    printf("Writing IMU data...");
-    of_imu_meas << imu_data.header.stamp << "," << imu_data.linear_acceleration.x << "," << imu_data.linear_acceleration.y << "," 
-        << imu_data.linear_acceleration.z << "," << imu_data.angular_velocity.x << "," << imu_data.angular_velocity.y << "," << imu_data.angular_velocity.z << "\n";
     // Finally set the covariance in the message (in the order position then orientation as per ros convention)
     std::vector<Type*> statevars;
     statevars.push_back(state->_imu->pose()->p());
@@ -755,8 +743,8 @@ void RosVisualizer::publish_state() {
 void RosVisualizer::publish_images() {
 
     // Check if we have subscribers
-    /*if(pub_tracks.getNumSubscribers()==0)
-        return;*/
+    if(pub_tracks.getNumSubscribers()==0)
+        return;
 
     // Get our trackers
     TrackBase *trackFEATS = _app->get_track_feat();
@@ -776,7 +764,7 @@ void RosVisualizer::publish_images() {
     sensor_msgs::ImagePtr exl_msg = cv_bridge::CvImage(header, "bgr8", img_history).toImageMsg();
 
     // Publish
-    /*pub_tracks.publish(exl_msg);*/
+    pub_tracks.publish(exl_msg);
 
 }
 
@@ -786,9 +774,9 @@ void RosVisualizer::publish_images() {
 void RosVisualizer::publish_features() {
 
     // Check if we have subscribers
-    /*if(pub_points_msckf.getNumSubscribers()==0 && pub_points_slam.getNumSubscribers()==0 &&
-       pub_points_aruco.getNumSubscribers()==0 && pub_points_sim.getNumSubscribers()==0)
-        return;*/
+    // if(pub_points_msckf.getNumSubscribers()==0 && pub_points_slam.getNumSubscribers()==0 &&
+    //    pub_points_aruco.getNumSubscribers()==0 && pub_points_sim.getNumSubscribers()==0)
+    //     return;
 
     // Get our good features
     std::vector<Eigen::Vector3d> feats_msckf = _app->get_good_features_MSCKF();
@@ -820,7 +808,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    // pub_points_msckf.publish(cloud);
+    pub_points_msckf.publish(cloud);
 
     //====================================================================
     //====================================================================
@@ -855,7 +843,7 @@ void RosVisualizer::publish_features() {
     }
 
     // Publish
-    /*pub_points_slam.publish(cloud_SLAM);*/
+    pub_points_slam.publish(cloud_SLAM);
 
     //====================================================================
     //====================================================================
@@ -978,7 +966,7 @@ void RosVisualizer::publish_groundtruth() {
     poseIinM.pose.position.x = state_gt(5,0);
     poseIinM.pose.position.y = state_gt(6,0);
     poseIinM.pose.position.z = state_gt(7,0);
-    /*pub_posegt.publish(poseIinM);*/
+    pub_posegt.publish(poseIinM);
 
     // Append to our pose vector
     poses_gt.push_back(poseIinM);

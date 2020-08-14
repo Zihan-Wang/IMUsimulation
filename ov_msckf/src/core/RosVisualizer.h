@@ -141,11 +141,11 @@ namespace ov_msckf {
         ros::Publisher pub_points_featsseen;
 
         ros::Publisher pub_pathgt;
-        // ros::Publisher pub_points_msckf;
+        ros::Publisher pub_points_msckf;
         // ros::Publisher pub_points_sim;
-        /* ros::Publisher pub_points_slam;
-        ros::Publisher pub_points_aruco;
-        ros::Publisher pub_tracks;*/
+        ros::Publisher pub_points_slam;
+        // ros::Publisher pub_points_aruco;
+        ros::Publisher pub_tracks;
         tf::TransformBroadcaster *mTfBr;
 
         // For path viz
@@ -154,7 +154,7 @@ namespace ov_msckf {
         vector<geometry_msgs::PoseStamped> poses_imu;
 
         // Groundtruth infomation
-        /*ros::Publisher pub_posegt;*/
+        ros::Publisher pub_posegt;
         double summed_rmse_ori = 0.0;
         double summed_rmse_pos = 0.0;
         double summed_nees_ori = 0.0;
@@ -182,7 +182,7 @@ namespace ov_msckf {
 
         // Files and if we should save total state
         bool save_total_state;
-        std::ofstream of_state_est, of_state_std, of_state_gt, of_feats_gt, of_imu_pose, of_imu_meas;
+        std::ofstream of_state_est, of_state_std, of_state_gt, of_feats_gt, of_imu_pose;
     };
 
 
