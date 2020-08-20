@@ -280,11 +280,15 @@ bool VioManager::try_to_initialize() {
     // Make big vector (q,p,v,bg,ba), and update our state
     // Note: start from zero position, as this is what our covariance is based off of
     Eigen::Matrix<double,16,1> imu_val;
-    imu_val.block(0,0,4,1) = q_GtoI0;
-    imu_val.block(4,0,3,1) << 0,0,0;
 
+    imu_val.block(0,0,4,1) = params.init_quat;
+    imu_val.block(4,0,3,1) = params.init_pos;
     imu_val.block(7,0,3,1) = params.init_vel;
+
+    // imu_val.block(0,0,4,1) = q_GtoI0;
+    // imu_val.block(4,0,3,1) << 0,0,0;
     // imu_val.block(7,0,3,1) = v_I0inG;
+
     imu_val.block(10,0,3,1) = b_w0;
     imu_val.block(13,0,3,1) = b_a0;
     //imu_val.block(10,0,3,1) << 0,0,0;

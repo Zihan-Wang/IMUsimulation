@@ -69,6 +69,12 @@ namespace ov_msckf {
         /// Initial Velocity in the IMU frame.
         Eigen::Vector3d init_vel = {0.0, 0.0, 0.0};
 
+        /// Initial Position in the IMU frame.
+        Eigen::Vector3d init_pos = {0.0, 0.0, 0.0};
+
+        /// Initial Quaternion in the IMU frame.
+        Eigen::Vector4d init_quat = {0.0, 0.0, 0.0, 1.0};
+
         /// If we should record the timing performance to file
         bool record_timing_information = false;
 

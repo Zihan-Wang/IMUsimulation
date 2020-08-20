@@ -136,7 +136,7 @@ int main(int argc, char** argv)
             sys->feed_measurement_imu(time_imu, wm, am);
 
             // printf("Writing IMU data...");
-            of_imu_meas << time_imu << "," << am(0) << "," << am(1) << ","
+            of_imu_meas << std::setprecision(14) << time_imu << "," << am(0) << "," << am(1) << ","
                 << am(2) << "," << wm(0) << "," << wm(1) << "," << wm(2) << "\n";
 
 #ifdef ROS_AVAILABLE

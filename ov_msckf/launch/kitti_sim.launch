@@ -12,7 +12,7 @@
     <arg name="max_cameras" default="1" />
 
     <arg name="freq_cam"    default="10" />
-    <arg name="freq_imu"    default="100" />
+    <arg name="freq_imu"    default="250" />
 
     <arg name="basedir"     default="/home/jamesdi1993/datasets/Kitti/dataset" />
     <arg name="seq"         default="06" /> 

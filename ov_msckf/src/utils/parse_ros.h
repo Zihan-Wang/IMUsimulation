@@ -105,6 +105,18 @@ namespace ov_msckf {
         assert(init_vel.size()==3);
         params.init_vel << init_vel.at(0), init_vel.at(1), init_vel.at(2);
 
+        // Initial Position
+        std::vector<double> init_pos = {params.init_pos(0), params.init_pos(1), params.init_pos(2)};
+        nh.param<std::vector<double>>("init_pos", init_pos, init_pos);
+        assert(init_pos.size()==3);
+        params.init_pos << init_pos.at(0), init_pos.at(1), init_pos.at(2);
+        
+        // Initial Quaternion
+        std::vector<double> init_quat = {params.init_quat(0), params.init_quat(1), params.init_quat(2), params.init_quat(3)};
+        nh.param<std::vector<double>>("init_quat", init_quat, init_quat);
+        assert(init_quat.size()==4);
+        params.init_quat << init_quat.at(0), init_quat.at(1), init_quat.at(2), init_quat.at(3);
+
         // Recording of timing information to file
         nh.param<bool>("record_timing_information", params.record_timing_information, params.record_timing_information);
         nh.param<std::string>("record_timing_filepath", params.record_timing_filepath, params.record_timing_filepath);
