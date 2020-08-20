@@ -3,7 +3,7 @@
     <!-- mono or stereo and what ros bag to play -->
     <arg name="max_cameras" default="1" />
     <arg name="use_stereo"  default="false" />
-    <arg name="bag_start"   default="0.4" /> <!-- 0.74 seems to be able to produce a relatively close trajectory. -->
+    <arg name="bag_start"   default="0.4" />
     <arg name="bag_durr"    default="999999" />
     <arg name="msckf_update" default="false" /> <!-- TODO: update parsing code to use this as an option -->
 

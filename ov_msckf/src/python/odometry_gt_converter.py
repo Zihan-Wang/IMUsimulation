@@ -21,23 +21,12 @@ raw_data_path = os.path.join(basedir, 'raw_data')
 odometry_data = pykitti.odometry(odometry_path , sequence)
 raw_data = pykitti.raw(raw_data_path, date, drive)
 
-output_path = os.path.join(odometry_path, "poses/" + sequence + "_converted.txt")
-
-
-# Transform the coordinate, such that the z axis point upwards. 
-# Note: This actually just does a axis rotaton, but the right way to do this is to 
-# mutiply the coordinate with a T_imu_cam0 instead. However, the resulting estimated
-# trajectory is very noisy, and I haven't had the time to figure out way.
-"""
-P = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]])
-poses_w_imu = [P.dot(T.dot(raw_data.calib.T_cam0_imu)) for T in odometry_data.poses]
-"""
+output_path = os.path.join(odometry_path, "poses/" + sequence + "_quat.txt")
 
 # Believe this is the right way to do it:
 T_cam0_imu = raw_data.calib.T_cam0_imu
 T_imu_cam0 = inv(T_cam0_imu)
 poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
-
 
 
 # dataset.calib:      Calibration data are accessible as a named tuple
@@ -69,15 +58,7 @@ print("\nExample of extracted translation: " + str(p_w_imu[0]))
 q_w_imu = np.array(map(matrix_to_quaternion, R_w_imu)) # qx qy qz qw
 p_w_imu = np.array(p_w_imu)
 
-# qs, qv = q_w_imu[:, 0].reshape(-1, 1), q_w_imu[:, 1:] 
-
-print(q_w_imu.shape,)
-
-
 # Construct dataset and output
-
-# dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, qv, qs))) # (timestamp(s) tx ty tz qx qy qz qw)
-
 dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, q_w_imu))) # (timestamp(s) tx ty tz qx qy qz qw)
 dataset.to_csv(output_path, sep=' ', header=False, index=False)
  

@@ -33,7 +33,7 @@ def compute_angle(R):
     Compute the rotation angle from a 4x4 homogeneous matrix.
     """
     # an invitation to 3-d vision, p 27
-    return numpy.arccos( min(1,max(-1, (numpy.trace(R) - 1)/2)))
+    return numpy.arccos(min(1,max(-1, (numpy.trace(R) - 1)/2)))
 
 
 def matrix_to_quaternion(R):
