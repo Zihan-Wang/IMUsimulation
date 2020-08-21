@@ -9,7 +9,7 @@
 
     <!-- change the synchronized bag file here. -->
     <arg name="bag"         default="/home/jamesdi1993/datasets/Kitti/kitti_odometry_sequence_06.bag" />
-    <arg name="path_gt"     default="/home/jamesdi1993/datasets/Kitti/dataset/poses/06_converted.txt" />
+    <arg name="path_gt"     default="/home/jamesdi1993/datasets/Kitti/odometry/dataset/poses/06_quat.txt" />
 
     <!-- what configuration mode we are in -->
     <!-- 0 gray scale  -->
@@ -17,7 +17,7 @@
     <arg name="sensor_config"   default="1" />
 
     <!-- imu starting thresholds -->
-    <arg name="init_window_time"  default="1.0" />
+    <arg name="init_window_time"  default="0.5" />
     <arg name="init_imu_thresh"   default="0.05" />
 
     <!-- saving trajectory path and timing information -->
@@ -50,7 +50,7 @@
         <param name="calib_cam_extrinsics"   type="bool"   value="false" />
         <param name="calib_cam_intrinsics"   type="bool"   value="false" />
         <param name="calib_cam_timeoffset"   type="bool"   value="true" />
-        <param name="calib_camimu_dt"        type="double" value="0.0" />
+        <param name="calib_camimu_dt"        type="double" value="0.007" />
         <param name="max_clones"             type="int"    value="8" />
         <param name="max_slam"               type="int"    value="150" />
         <param name="max_slam_in_update"     type="int"    value="40" />
