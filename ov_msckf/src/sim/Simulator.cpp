@@ -548,7 +548,7 @@ std::vector<std::pair<size_t,Eigen::VectorXf>> Simulator::project_pointcloud(con
 
     }
 
-    printf("Number of skipped point cloud: %d \n", skipped_counter);
+    // printf("Number of skipped point cloud: %d \n", skipped_counter);
 
     // Return our projections
     return uvs;

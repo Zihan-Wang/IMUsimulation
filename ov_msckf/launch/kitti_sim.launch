@@ -14,7 +14,7 @@
     <arg name="freq_cam"    default="10" />
     <arg name="freq_imu"    default="250" />
 
-    <arg name="basedir"     default="/home/jamesdi1993/datasets/Kitti/dataset" />
+    <arg name="basedir"     default="/home/jamesdi1993/datasets/Kitti/odometry/dataset" />
     <arg name="seq"         default="06" /> 
 
     <!-- sensor noise values / update -->
@@ -65,7 +65,7 @@
         <!-- SIMULATION PARAMETERS -->
         <!-- =============================================== -->
 
-        <param name="sim_traj_path"          type="string" value="$(arg basedir)/poses/$(arg seq)_converted.txt" />
+        <param name="sim_traj_path"          type="string" value="$(arg basedir)/poses/$(arg seq)_quat.txt" />
         <param name="sim_seed_state_init"    type="int"    value="0" />
         <param name="sim_seed_measurements"  type="int"    value="$(arg seed)" />
         <param name="sim_seed_preturb"       type="int"    value="$(arg seed)" />

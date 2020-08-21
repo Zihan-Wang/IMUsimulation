@@ -14,7 +14,7 @@ sequence = '06'
 date = '2011_09_30' # mapping from odometry to raw dataset 
 drive = '0020'
 
-odometry_path = os.path.join(basedir, 'dataset')
+odometry_path = os.path.join(basedir, 'odometry/dataset')
 raw_data_path = os.path.join(basedir, 'raw_data')
 
 # Read both odometry and raw datasets;
@@ -23,7 +23,6 @@ raw_data = pykitti.raw(raw_data_path, date, drive)
 
 output_path = os.path.join(odometry_path, "poses/" + sequence + "_quat.txt")
 
-# Believe this is the right way to do it:
 T_cam0_imu = raw_data.calib.T_cam0_imu
 T_imu_cam0 = inv(T_cam0_imu)
 poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
@@ -39,11 +38,11 @@ poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
 
 print("Shape of the ground-truth poses: " + str(len(poses_w_imu)))
 print("\nShape of timestamps: " + str(len(odometry_data.timestamps)))
-
 print("=======================================")
 
 print("\nExample of ground-truth pose: " + str(poses_w_imu[0]))
 print("\nExample of timestamps: " + str(odometry_data.timestamps[0:10]))
+print("=======================================")
 
 # extract timestamps
 timestamps = np.array(map(lambda x: x.total_seconds(), odometry_data.timestamps)).reshape(-1, 1)
