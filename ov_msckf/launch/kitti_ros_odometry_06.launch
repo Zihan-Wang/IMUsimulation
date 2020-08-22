@@ -36,8 +36,11 @@
     <node name="run_subscribe_msckf" pkg="ov_msckf" type="run_subscribe_msckf" output="screen" clear_params="true" required="true">
         <!-- bag topics -->
         <param name="topic_imu"      type="string" value="/kitti/oxts/imu" />
-        <param name="topic_camera0"  type="string" value="/kitti/camera_color_left/image" />
-        <param name="topic_camera1"  type="string" value="/kitti/camera_color_right/image" />
+        <param name="topic_camera0"  type="string" value="/kitti/camera_gray_left/image" if="$(eval arg('sensor_config') == 0)"/>
+        <param name="topic_camera1"  type="string" value="/kitti/camera_gray_right/image" if="$(eval arg('sensor_config') == 0)"/>
+
+        <param name="topic_camera0"  type="string" value="/kitti/camera_color_left/image" if="$(eval arg('sensor_config') == 1)"/>
+        <param name="topic_camera1"  type="string" value="/kitti/camera_color_right/image" if="$(eval arg('sensor_config') == 1)"/>
 
         <!-- groundtruth file -->
         <param name="path_gt"  type="string" value="$(arg path_gt)" />
@@ -115,24 +118,46 @@
         <param name="cam0_is_fisheye" type="bool" value="false" />
         <param name="cam1_is_fisheye" type="bool" value="false" />
 
+
         <!-- TODO: Read directly from the calibration files-->
-        <!-- gray scale -->
+        <!-- intrinsics -->
+        <!-- gray scale  -->
+        <rosparam param="cam0_k" if="$(eval arg('sensor_config') == 0)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
+        <rosparam param="cam0_d" if="$(eval arg('sensor_config') == 0)">[0.0, 0.0, 0.0, 0.0]</rosparam>
+        <rosparam param="cam1_k" if="$(eval arg('sensor_config') == 0)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
+        <rosparam param="cam1_d" if="$(eval arg('sensor_config') == 0)">[0.0, 0.0, 0.0, 0.0]</rosparam>
 
         <!-- color scale -->
-        <!-- intrinsics, only used for fisheye model?-->
         <rosparam param="cam0_k" if="$(eval arg('sensor_config') == 1)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam0_d" if="$(eval arg('sensor_config') == 1)">[0.0, 0.0, 0.0, 0.0]</rosparam>
         <rosparam param="cam1_k" if="$(eval arg('sensor_config') == 1)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam1_d" if="$(eval arg('sensor_config') == 1)">[0.0, 0.0, 0.0, 0.0]</rosparam>
         
 
-        <!-- extrinsics -->
+        <!-- extrinsics for gray scale-->
+        <rosparam param="T_C0toI" if="$(eval arg('sensor_config') == 0)">
+            [-0.00108863, -0.00851207,  0.99996318,  1.14389871,
+             -0.9999764,  -0.00677767, -0.00114634, -0.31271847,
+             0.00678718,  -0.99994073, -0.00850449,  0.72654605,
+             0.0,          0.0,         0.0,          1.0
+            ]
+        </rosparam>
+
+        <rosparam param="T_C1toI" if="$(eval arg('sensor_config') == 0)">
+            [-0.00108863, -0.00851207,  0.99996318,  1.14331395,
+             -0.9999764,  -0.00677767, -0.00114634, -0.84985645,
+             0.00678718,  -0.99994073, -0.00850449,  0.73019178,
+             0.0,          0.0,         0.0,         1.0
+            ]
+        </rosparam>
+
+        <!-- extrinsics for color scale-->
         <rosparam param="T_C0toI" if="$(eval arg('sensor_config') == 1)">
             [
             -0.00108863, -0.00851207,  0.99996318, 1.14397089,
             -0.9999764,  -0.00677767, -0.00114634,-0.24640917,
             0.00678718,  -0.99994073, -0.00850449, 0.72609598,
-            0.0, 0.0, 0.0, 1.0
+            0.0,          0.0,         0.0,        1.0
             ]
         </rosparam>
 
@@ -141,7 +166,7 @@
             -0.00108863, -0.00851207,  0.99996318,  1.14338531,
             -0.9999764,  -0.00677767, -0.00114634, -0.78430096,
             0.00678718,  -0.99994073, -0.00850449,  0.72974684,
-            0.0,          0.0          0.0          1.0
+            0.0,          0.0,         0.0,         1.0
             ]
         </rosparam>
     </node>
