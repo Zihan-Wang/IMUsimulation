@@ -14,7 +14,7 @@
     <arg name="max_cameras" default="1" />
 
     <arg name="freq_cam"    default="10" />
-    <arg name="freq_imu"    default="400" />
+    <arg name="freq_imu"    default="200" />
 
     <arg name="dataset"    default="udel_gore.txt" /> <!-- euroc_V1_01_easy, udel_gore, tum_corridor1_512_16_okvis, udel_arl -->
 
@@ -38,7 +38,7 @@
     <arg name="path_featsgt"    default="$(find ov_data)/sim/feats.csv" />
     <arg name="path_imu_pose"   default="$(find ov_data)/sim/imupose.csv" />
     <arg name="path_featdir"    default="$(find ov_data)/sim/featsmeas" />
-    <arg name="path_imu_meas"    default="$(find ov_data)/sim/imumeas.csv" />
+    <arg name="path_imu_meas"   default="$(find ov_data)/sim/imumeas.csv" />
     <arg name="dosave_pose"     default="false" />
     <arg name="path_est"        default="$(find ov_eval)/data/sim/traj_estimate.txt" />
     <arg name="path_gt"         default="$(find ov_eval)/data/sim/traj_groundtruth.txt" />
@@ -72,6 +72,7 @@
 
         <param name="path_featsgt"      type="string" value="$(arg path_featsgt)" />
         <param name="path_imu_pose"     type="string" value="$(arg path_imu_pose)" />
+        <param name="path_imu_meas"     type="string" value="$(arg path_imu_meas)" />
         <param name="path_featdir"      type="string" value="$(arg path_featdir)" />
         <param name="save_total_state"  type="bool"   value="$(arg dosave_state)" />
         <param name="filepath_est"      type="string" value="$(arg path_state_est)" />

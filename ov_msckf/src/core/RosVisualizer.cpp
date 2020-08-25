@@ -99,9 +99,12 @@ RosVisualizer::RosVisualizer(ros::NodeHandle &nh, VioManager* app, Simulator *si
         boost::filesystem::remove(path_featsgt);
     of_feats_gt.open(path_featsgt.c_str());
 
+
     if (boost::filesystem::exists(path_imu_pose))
         boost::filesystem::remove(path_imu_pose);
     of_imu_pose.open(path_imu_pose.c_str());
+
+    printf("Writing estimated IMU pose to: %s\n", path_imu_pose.c_str());
 
     // If the file is not open, then open the file
     if(save_total_state) {

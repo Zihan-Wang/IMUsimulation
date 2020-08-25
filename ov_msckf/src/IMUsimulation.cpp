@@ -111,6 +111,7 @@ int main(int argc, char** argv)
 
     // open stream for writing out imu data
     of_imu_meas.open(path_imu_meas.c_str());
+    printf("Writing estimated IMU pose to: %s\n", path_imu_meas.c_str());
 
     // Buffer our camera image
     double buffer_timecam = -1;
@@ -134,8 +135,7 @@ int main(int argc, char** argv)
         bool hasimu = sim->get_next_imu(time_imu, wm, am);
         if(hasimu) {
             sys->feed_measurement_imu(time_imu, wm, am);
-
-            // printf("Writing IMU data...");
+            // printf("Writing IMU data...\n");
             of_imu_meas << std::setprecision(14) << time_imu << "," << am(0) << "," << am(1) << ","
                 << am(2) << "," << wm(0) << "," << wm(1) << "," << wm(2) << "\n";
 
