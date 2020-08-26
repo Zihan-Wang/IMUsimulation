@@ -120,19 +120,17 @@
 
 
         <!-- TODO: Read directly from the calibration files-->
-        <!-- intrinsics -->
-        <!-- gray scale  -->
+        <!-- intrinsics gray scale -->
         <rosparam param="cam0_k" if="$(eval arg('sensor_config') == 0)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam0_d" if="$(eval arg('sensor_config') == 0)">[0.0, 0.0, 0.0, 0.0]</rosparam>
         <rosparam param="cam1_k" if="$(eval arg('sensor_config') == 0)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam1_d" if="$(eval arg('sensor_config') == 0)">[0.0, 0.0, 0.0, 0.0]</rosparam>
 
-        <!-- color scale -->
+        <!-- intrinsics color scale -->
         <rosparam param="cam0_k" if="$(eval arg('sensor_config') == 1)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam0_d" if="$(eval arg('sensor_config') == 1)">[0.0, 0.0, 0.0, 0.0]</rosparam>
         <rosparam param="cam1_k" if="$(eval arg('sensor_config') == 1)">[707.0912,707.0912,601.8873, 183.1104]</rosparam>
         <rosparam param="cam1_d" if="$(eval arg('sensor_config') == 1)">[0.0, 0.0, 0.0, 0.0]</rosparam>
-        
 
         <!-- extrinsics for gray scale-->
         <rosparam param="T_C0toI" if="$(eval arg('sensor_config') == 0)">

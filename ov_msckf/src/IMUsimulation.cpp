@@ -99,7 +99,7 @@ int main(int argc, char** argv)
     // Initialize our filter with the groundtruth
     sys->initialize_with_gt(imustate);
 
-    //===================================================================================
+    //===================================================================================gi
     //===================================================================================
     //===================================================================================
     std::string path_imu_meas;
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
     // open stream for writing out imu data
     of_imu_meas.open(path_imu_meas.c_str());
-    printf("Writing estimated IMU pose to: %s\n", path_imu_meas.c_str());
+    printf("Writing IMU measurement to: %s\n", path_imu_meas.c_str());
 
     // Buffer our camera image
     double buffer_timecam = -1;
@@ -132,7 +132,9 @@ int main(int argc, char** argv)
         // IMU: get the next simulated IMU measurement if we have it
         double time_imu;
         Eigen::Vector3d wm, am;
+
         bool hasimu = sim->get_next_imu(time_imu, wm, am);
+        
         if(hasimu) {
             sys->feed_measurement_imu(time_imu, wm, am);
             // printf("Writing IMU data...\n");

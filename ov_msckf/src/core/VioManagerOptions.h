@@ -66,6 +66,15 @@ namespace ov_msckf {
         ///  Variance threshold on our acceleration to be classified as moving
         double init_imu_thresh = 1.0;
 
+        /// If we should try to use zero velocity update
+        bool try_zupt = false;
+
+        /// Max velocity we will consider to try to do a zupt (i.e. if above this, don't do zupt)
+        double zupt_max_velocity = 1.0;
+
+        /// Multiplier of our zupt measurement IMU noise matrix (default should be 1.0)
+        double zupt_noise_multiplier = 1.0;
+
         /// Initial Velocity in the IMU frame.
         Eigen::Vector3d init_vel = {0.0, 0.0, 0.0};
 
@@ -112,6 +121,9 @@ namespace ov_msckf {
         /// Update options for ARUCO features (pixel noise and chi2 multiplier)
         UpdaterOptions aruco_options;
 
+        /// Update options for zero velocity (chi2 multiplier)
+        UpdaterOptions zupt_options;
+
         /**
          * @brief This function will print out all noise parameters loaded.
          * This allows for visual checking that everything was loaded properly from ROS/CMD parsers.
@@ -125,6 +137,8 @@ namespace ov_msckf {
             slam_options.print();
             printf("\tUpdater ARUCO Tags:\n");
             aruco_options.print();
+            printf("\tUpdater ZUPT:\n");
+            zupt_options.print();
         }
 
         // STATE DEFAULTS ==========================
