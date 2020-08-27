@@ -157,10 +157,10 @@ namespace ov_core {
 
             // Our "fixed" state vector from the ETH GT format [q,p,v,bg,ba]
             imustate(0, 0) = timestep; //time
-            imustate(1, 0) = state(5, 0); //quat
-            imustate(2, 0) = state(6, 0);
-            imustate(3, 0) = state(7, 0);
-            imustate(4, 0) = state(4, 0);
+            imustate(1, 0) = state(4, 0); //quat
+            imustate(2, 0) = state(5, 0);
+            imustate(3, 0) = state(6, 0);
+            imustate(4, 0) = state(7, 0);
             imustate(5, 0) = state(1, 0); //pos
             imustate(6, 0) = state(2, 0);
             imustate(7, 0) = state(3, 0);
