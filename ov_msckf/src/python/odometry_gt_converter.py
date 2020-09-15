@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from numpy.linalg import inv
-from transformation_helpers import matrix_to_quaternion
+from transformation_helpers import matrix_to_quaternion_hamiltonian, T_inv
 import numpy as np
 import os
 import pandas as pd
@@ -23,8 +23,9 @@ raw_data = pykitti.raw(raw_data_path, date, drive)
 
 output_path = os.path.join(odometry_path, "poses/" + sequence + "_quat.txt")
 
-T_cam0_imu = raw_data.calib.T_cam0_imu
-T_imu_cam0 = inv(T_cam0_imu)
+T_cam0_imu = raw_data.calib.T_cam0_imu # Transformation from imu to camera.
+
+T_imu_cam0 = T_inv(T_cam0_imu)
 poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
 
 
@@ -35,12 +36,13 @@ poses_w_imu = [T_imu_cam0.dot(T.dot(T_cam0_imu)) for T in odometry_data.poses]
 # dataset.gray:       Generator to load monochrome stereo pairs (cam0, cam1)
 # dataset.rgb:        Generator to load RGB stereo pairs (cam2, cam3)
 # dataset.velo:       Generator to load velodyne scans as [x,y,z,reflectance]
-
+print("\nShape of original ground-truth pose: " + str(len(odometry_data.poses)))
 print("Shape of the ground-truth poses: " + str(len(poses_w_imu)))
 print("\nShape of timestamps: " + str(len(odometry_data.timestamps)))
 print("=======================================")
 
-print("\nExample of ground-truth pose: " + str(poses_w_imu[0]))
+print("\nExample of original ground-truth poses: " + str(odometry_data.poses[0]))
+print("\nExample of transformed ground-truth pose: " + str(poses_w_imu[0]))
 print("\nExample of timestamps: " + str(odometry_data.timestamps[0:10]))
 print("=======================================")
 
@@ -54,8 +56,9 @@ timestamps = np.array(map(lambda x: x.total_seconds(), odometry_data.timestamps)
 print("\nExample of extracted rotation: " + str(R_w_imu[0]))
 print("\nExample of extracted translation: " + str(p_w_imu[0]))
 
-q_w_imu = np.array(map(matrix_to_quaternion, R_w_imu)) # qx qy qz qw
+q_w_imu = np.array(map(matrix_to_quaternion_hamiltonian, R_w_imu)) # qx qy qz qw
 p_w_imu = np.array(p_w_imu)
+# p_w_imu[:, 2] = -p_w_imu[:, 2]
 
 # Construct dataset and output
 dataset = pd.DataFrame(np.hstack((timestamps, p_w_imu, q_w_imu))) # (timestamp(s) tx ty tz qx qy qz qw)
